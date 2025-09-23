@@ -3,8 +3,7 @@
 
 #include "Mesh.h"
 
-Mesh::Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices, const std::vector<Texture> &textures, Transform transform, Transform *parent, bool use_tangent, bool use_skinning)
-{
+Mesh::Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices, const std::vector<Texture> &textures, const Transform &transform, Mesh *parent, bool use_tangent, bool use_skinning): parent() {
     this->vertices = vertices;
     this->indices = indices;
     this->textures = textures;
@@ -38,7 +37,7 @@ void Mesh::Draw(const Shader &shader) const {
         textures[i].bind();
     }
     glBindVertexArray(VAO);
-    shader.setMat4("model", transform.getMatrix()*parent->getMatrix());
+    shader.setMat4("model", getGlobalTransform().getMatrix());
     glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, nullptr);
     glBindVertexArray(0);
     glActiveTexture(GL_TEXTURE0);
@@ -100,4 +99,14 @@ void Mesh::updateMeshes(bool use_tangent, bool use_skinning) {
         glDisableVertexAttribArray(6);
     }
     glBindVertexArray(0);
+}
+
+Transform Mesh::getGlobalTransform() const{
+    if (!parent) return transform;
+    auto p = parent->getGlobalTransform();
+    return Transform({
+         glm::quat(glm::radians(p.rotation)) * (p.scale * transform.translation) + p.translation,
+        glm::degrees(glm::eulerAngles(glm::quat(glm::radians(p.rotation)) * glm::quat(glm::radians(transform.rotation)))),
+        p.scale * transform.scale
+    });
 }

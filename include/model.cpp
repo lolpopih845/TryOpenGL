@@ -4,15 +4,17 @@
 #include <iostream>
 
 // constructor, expects a filepath to a 3D model.
-Model::Model(std::string const &path, const bool gamma) : gammaCorrection(gamma)
+Model::Model(std::string const &path,Transform parent,Transform transform, const bool gamma) : gammaCorrection(gamma),parent(parent),transform(transform)
 {
     loadModel(path);
 }
 
 // draws the model, and thus all its meshes
-void Model::Draw(const Shader &shader) const {
-    for(unsigned int i = 0; i < meshes.size(); i++)
+void Model::Draw(const Shader &shader) {
+    for(unsigned int i = 0; i < meshes.size(); i++) {
+        meshes[i].parent = transform.getGlobalTransform(parent);
         meshes[i].Draw(shader);
+    }
 }
 
 // loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.

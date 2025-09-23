@@ -61,7 +61,6 @@ Mesh2D Create2DSun() {
 }
 Mesh2D Create2DRay() {
     unsigned int VBO, VAO, EBO;
-    constexpr int numRay = 16;
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
     float squareVertices[20] = {
@@ -106,7 +105,6 @@ Mesh2D Create2DRay() {
                 sunID = id;
                 ray = Create2DRay();
                 center = Create2DSun();
-
                 frame = 0;
                 active = true;
                 model = glm::mat4(1.0f);
@@ -139,7 +137,7 @@ Mesh2D Create2DRay() {
                     const float rotation = angle + glm::half_pi<float>();
                     rayT[i] = glm::rotate(rayT[i], rotation, glm::vec3(0, 0, 1));
                 }
-                model = glm::translate(model, glm::vec3(0, 0, -5));
+                model = glm::translate(model, glm::vec3(0, 0, -2));
                 //transform = glm::rotate(transform, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
                 Draw();
             }
@@ -212,7 +210,7 @@ void CreatingSphere(Mesh &mesh, int progress) {
         k1 = i * (sectorCount + 1);     // beginning of current stack
         k2 = k1 + sectorCount + 1;      // beginning of next stack
 
-        for(int j = 0; j < sectorCount; ++j, ++k1, ++k2)
+        for(int j = 0; j < (int)((float)sectorCount*progress/100); ++j, ++k1, ++k2)
         {
             // 2 triangles per sector excluding first and last stacks
             // k1 => k2 => k1+1
@@ -233,4 +231,50 @@ void CreatingSphere(Mesh &mesh, int progress) {
         }
     }
     mesh.updateMeshes();
+}
+
+Mesh CreatePrism() {
+    std::vector<Vertex> vertices;
+    float vertex[] = {
+        //Front Tri
+        0.0f, 0.5f,0.0f    , 0.f,0.f,-1.f  , 0.5f,1.f,
+        -0.5f,-0.5f,0.f , 0.f,0.f,-1.f  , 0.f,0.f,
+        0.5f,-0.5f,0.f  , 0.f,0.f,-1.f  , 1.f,0.f,
+        //Back Tri
+        0.0f, 0.5f,1.0f    , 0.f,0.f,1.f   , 0.5f,1.f,
+        -0.5f,-0.5f,1.f , 0.f,0.f,1.f   , 0.f,0.f,
+        0.5f,-0.5f,1.f  , 0.f,0.f,1.f   , 1.f,0.f,
+        //Rec Left
+        -0.5f,-0.5f,0.0f, -0.8944f,0.4472f,0,   0.0f,0.0f,
+        -0.5f,-0.5f,1.0f, -0.8944f,0.4472f,0,   1.0f,0.0f,
+        0.0f, 0.5f,0.0f , -0.8944f,0.4472f,0,   0.0f,1.0f,
+        0.0f, 0.5f,1.0f , -0.8944f,0.4472f,0,   1.0f,1.0f,
+        //Rec Right
+        0.5f,-0.5f,0.0f , 0.8944f,0.4472f,0,    0.0f,0.0f,
+        0.5f,-0.5f,1.0f , 0.8944f,0.4472f,0,    1.0f,0.0f,
+        0.0f, 0.5f,0.0f , 0.8944f,0.4472f,0,    0.0f,1.0f,
+        0.0f, 0.5f,1.0f , 0.8944f,0.4472f,0,    1.0f,1.0f,
+        //Rec Down
+        -0.5f,-0.5f,0.f , 0.f,-1.f,0.f  , 0.f,0.f,
+        0.5f,-0.5f,0.f  , 0.f,-1.f,0.f  , 1.f,0.f,
+        -0.5f,-0.5f,1.f , 0.f,-1.f,0.f   , 0.f,1.f,
+        0.5f,-0.5f,1.f  , 0.f,-1.f,0.f   , 1.f,1.f,
+    };
+    for (int i = 0;i < std::size(vertex); i+=8) {
+        vertices.push_back({
+            glm::vec3(vertex[i], vertex[i + 1], vertex[i + 2]), glm::vec3(vertex[i + 3], vertex[i + 4], vertex[i + 5]),
+            glm::vec2(vertex[i + 6], vertex[i + 7])
+        });
+    }
+    const std::vector<unsigned int> indices = {
+        0, 1, 2,
+        3, 4, 5,
+        6, 7, 8,
+        7, 8, 9,
+        10,11,13,
+        10,12,13,
+        14,15,17,
+        14,16,17
+    };
+    return Mesh(vertices, indices);
 }

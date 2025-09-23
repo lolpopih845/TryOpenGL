@@ -9,6 +9,7 @@
 #include "include/texture.h"
 #include "include/camera.h"
 #include "MeshPlayer.h"
+#include "HappyForm.h"
 
 #include <iostream>
 
@@ -83,13 +84,13 @@ int main() {
     };
     Texture so_true("resources/sotrue.png");
     Sunny2D sun2D(0,_2DShader);
-    Transform sun3DTransform = {glm::vec3(1.0f, 1.0f, 1.f), glm::vec3(.0f, 0.0f, 0.0f),glm::vec3(1.0f,1.0f,1.0f)};
+    Merlin merlin(_3DShader);
     std::vector<Texture> textures;
     textures.push_back(so_true);
 
-    Transform sunCenterTransform = {glm::vec3(0.0f, 0.0f, 0.f), glm::vec3(72.0f, 0.0f, 0.0f),glm::vec3(1.0f,1.0f,1.0f)};
-    Mesh sunCenter3D(std::vector<Vertex>(), std::vector<unsigned int>(), textures, sunCenterTransform ,&sun3DTransform);
-    CreatingSphere(sunCenter3D,0);
+    // Transform sunCenterTransform = {glm::vec3(0.0f, 0.0f, 0.f), glm::vec3(72.0f, 0.0f, 0.0f),glm::vec3(1.0f,1.0f,1.0f)};
+    // Mesh sunCenter3D(std::vector<Vertex>(), std::vector<unsigned int>(), textures, sunCenterTransform ,sun3DTransform);
+    // CreatingSphere(sunCenter3D,0);
 
     camera.SetUpCameraPerspective(glm::radians(45.0f),(float)SCR_WIDTH / (float)SCR_HEIGHT,0.1f,10.f);
     // render loop
@@ -109,10 +110,11 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         so_true.bind();
 
-        if (sun2D.active) sun2D.Update();
+        if (currentFrame<5) sun2D.Update();
         else sun2D.Destroy();
 
-        sunCenter3D.Draw(_3DShader);
+        merlin.Update(currentFrame,deltaTime);
+        merlin.Draw();
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------

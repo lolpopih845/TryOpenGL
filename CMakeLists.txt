@@ -15,7 +15,6 @@ include_directories(
         ${LIB_ROOT}/GLAD/include
         ${LIB_ROOT}/glm/include
         ${LIB_ROOT}/stb
-        ${LIB_ROOT}/assimp/include
 )
 
 # === Link directory for GLFW ===
@@ -31,10 +30,8 @@ add_library(glad STATIC ${LIB_ROOT}/glad/src/glad.c
         include/stb_image.cpp
         include/camera.cpp
         include/camera.h
-        include/Mesh.cpp
-        include/Mesh.h
-        include/model.cpp
-        include/model.h
+        include/mesh.cpp
+        include/mesh.h
 )
 
 # === Executable ===
@@ -48,4 +45,4 @@ file(COPY ${CMAKE_SOURCE_DIR}/shaders DESTINATION ${CMAKE_BINARY_DIR})
 
 # === Link all libraries ===
 target_link_directories(OpenGLProject PRIVATE ${LIB_ROOT}/glfw/build/src)
-target_link_libraries(OpenGLProject glad glfw3 opengl32)
+target_link_libraries(OpenGLProject glad glfw3 opengl32 )
