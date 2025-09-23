@@ -3,6 +3,8 @@
 
 #include "Mesh.h"
 
+
+
 Mesh::Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices, const std::vector<Texture> &textures, const Transform &transform, Mesh *parent, bool use_tangent, bool use_skinning): parent() {
     this->vertices = vertices;
     this->indices = indices;

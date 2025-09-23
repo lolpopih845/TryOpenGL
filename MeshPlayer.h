@@ -233,8 +233,8 @@ void CreatingSphere(Mesh &mesh, int progress) {
     mesh.updateMeshes();
 }
 
-Mesh CreatePrism() {
-    std::vector<Vertex> vertices;
+void CreatePrism(Mesh &mesh) {
+    std::vector<Vertex>().swap(mesh.vertices);
     float vertex[] = {
         //Front Tri
         0.0f, 0.5f,0.0f    , 0.f,0.f,-1.f  , 0.5f,1.f,
@@ -261,12 +261,12 @@ Mesh CreatePrism() {
         0.5f,-0.5f,1.f  , 0.f,-1.f,0.f   , 1.f,1.f,
     };
     for (int i = 0;i < std::size(vertex); i+=8) {
-        vertices.push_back({
+        mesh.vertices.push_back({
             glm::vec3(vertex[i], vertex[i + 1], vertex[i + 2]), glm::vec3(vertex[i + 3], vertex[i + 4], vertex[i + 5]),
             glm::vec2(vertex[i + 6], vertex[i + 7])
         });
     }
-    const std::vector<unsigned int> indices = {
+    mesh.indices = {
         0, 1, 2,
         3, 4, 5,
         6, 7, 8,
@@ -276,5 +276,5 @@ Mesh CreatePrism() {
         14,15,17,
         14,16,17
     };
-    return Mesh(vertices, indices);
+    mesh.updateMeshes();
 }

@@ -84,7 +84,14 @@ int main() {
     };
     Texture so_true("resources/sotrue.png");
     Sunny2D sun2D(0,_2DShader);
-    Merlin merlin(_3DShader);
+    std::vector<Merlin> many_merlins;
+    many_merlins.push_back(Merlin(_3DShader,DEFAULT_TRANSFORM));
+    for (int i=0;i<7;i++) {
+        Transform rando_trans({glm::vec3((float)(4 - rand()%8),(float)(2 - rand()%4),(float)(4 - rand()%8)),glm::vec3(0,0,0),glm::vec3(1,1,1)});
+        many_merlins.push_back(Merlin(_3DShader,rando_trans));
+    }
+    float merlinCd = 0;
+    int merlinCount = 1;
     std::vector<Texture> textures;
     textures.push_back(so_true);
 
@@ -113,8 +120,16 @@ int main() {
         if (currentFrame<5) sun2D.Update();
         else sun2D.Destroy();
 
-        merlin.Update(currentFrame,deltaTime);
-        merlin.Draw();
+        for (int i=0;i<merlinCount;i++) {
+            many_merlins[i].Update(deltaTime);
+            many_merlins[i].Draw();
+        }
+        merlinCd+=deltaTime;
+        if (merlinCount<8&&merlinCd>=5) {
+            merlinCd = 0;
+            merlinCount++;
+        }
+
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------

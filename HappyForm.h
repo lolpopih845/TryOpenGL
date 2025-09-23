@@ -5,21 +5,18 @@
 #include "MeshPlayer.h"
 
 class Rotater {
-
 public:
     Transform orbitRing; //Pos(x,y,z), Rot(x) -> 2D invisible circular plane, Slc(x,y) oral plane
     Transform parent;
-    std::vector<Mesh> prisms;
+    Mesh prisms[4] = {Mesh(),Mesh(),Mesh(),Mesh()};
+    unsigned int currentIndex = 0;
     Shader shader;
     float delay;
     float lastTime;
-    float offset = 0.5f;
-    int rotating = 0;
-    const unsigned int MAXPRISMS = 4;
-    Rotater(const Shader shader, const Transform &orbitRing, const Transform &parent, float delay): orbitRing(orbitRing),parent(parent), shader(shader),delay(delay) {
+    float r_speed;
+
+    Rotater(const Shader shader, const Transform &orbitRing, const Transform &parent, float delay, float r_speed): orbitRing(orbitRing),parent(parent), shader(shader),delay(delay),r_speed(r_speed) {
         lastTime = glfwGetTime();
-        Mesh prism = CreatePrism();
-        prisms.push_back(prism);
     }
     void Draw() const {
         for (const auto &prism: prisms) {
@@ -27,22 +24,21 @@ public:
         }
     }
     void Update(const float time) {
-        // if (delay>0) {
-        //     if (time - lastTime > delay) delay = 0;
-        //     else return;
-        // }
-        // if (prisms.size()<MAXPRISMS && time-lastTime > offset) {
-        //     lastTime = time;
-        //     Mesh prism = CreatePrism();
-        //     prisms.push_back(prism);
-        //     if (prisms.size()==MAXPRISMS) rotating = 1;
-        // }
-        //
-        orbitRing.rotation.x += 0.5f*rotating;
-        parent = Transform({{0,sin(time)/5,-1.2},glm::vec3(0),glm::vec3(1)});
-        for (int i=0;i<prisms.size();i++) {
+        if (delay>0) {
+            if (time - lastTime > delay) delay = 0;
+            else return;
+        }
+        if (currentIndex<4 && time-lastTime > 0.5f) {
+            lastTime = time;
+            CreatePrism(prisms[currentIndex]);
+            currentIndex++;
+        }
+
+        orbitRing.rotation[0] += r_speed;
+        Transform new_parent = Transform({{0,sin(time)/5,-1.2},glm::vec3(0),glm::vec3(1)}).getGlobalTransform(parent);
+        for (int i=0;i<4;i++) {
             //prisms[i].transform = DEFAULT_TRANSFORM.getGlobalTransform(parent);
-            prisms[i].transform = CalMatrix(time+i*0.33).getGlobalTransform(parent);
+            prisms[i].transform = CalMatrix(time+i*0.33).getGlobalTransform(new_parent);
         }
     }
 private:
@@ -64,6 +60,7 @@ private:
 };
 class Merlin {
 public:
+    float time;
     Shader shader;
     Transform transform;
     Mesh center;
@@ -72,13 +69,16 @@ public:
     int last_state;
     std::vector<Rotater> rotaters;
 
-    Merlin(Shader shader): shader(shader),transform(transform) {
+    Merlin(Shader shader,Transform transform): shader(shader),transform(transform) {
+        time = 0;
         state = 0;
         center = Mesh();
         CreatingSphere(center, 0);
-        center.transform = {{0,0,-1},glm::vec3(90,0,0),glm::vec3(0.5)};
+        center.transform = Transform({{0,0,-1},glm::vec3(90,0,0),glm::vec3(0.5)}).getGlobalTransform(transform);
         centerProg = 0;
         last_state = 0;
+        rotaters.push_back(Rotater(shader,{glm::vec3(0,0,0),{30,0,0},{1,0.5,0}},transform,0,0.02f));
+        rotaters.push_back(Rotater(shader,{glm::vec3(0,0,0),{120,0,0},{1.25,0.75,0}},transform,3,0.01f));
     }
 
     void Draw() const {
@@ -94,12 +94,12 @@ public:
                 return;
         }
     }
-    void Update(const float time,const float &dtime) {
+    void Update(const float &dtime) {
+        time+=dtime;
         state = std::min(2,(int)time/3);
         if (state != last_state && state == 2) {
             last_state = state;
-            rotaters.push_back(Rotater(shader,{glm::vec3(0,0,0),{30,0,0},{1,0.5,0}},transform,0));
-            rotaters.push_back(Rotater(shader,{glm::vec3(0,0,0),{120,0,0},{1.25,0.75,0}},transform,3));
+            for (int i=0;i<rotaters.size();i++) rotaters[i].lastTime = time;
         }
         switch (state) {
             case 0:
@@ -111,7 +111,7 @@ public:
                 }
                 break;
             case 2:
-                center.transform = Transform({{0,sin(time)/5,-1},glm::vec3(90,0,time*250),glm::vec3(0.5)});
+                center.transform = Transform({{0,sin(time)/5,-1},glm::vec3(90,0,time*250),glm::vec3(0.5)}).getGlobalTransform(transform);
                 for (int i=0;i<rotaters.size();i++) rotaters[i].Update(time);
                 break;
             default:

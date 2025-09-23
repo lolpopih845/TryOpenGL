@@ -66,4 +66,5 @@ private:
     bool use_skinning;
     void setupMesh();
 };
+
 #endif
