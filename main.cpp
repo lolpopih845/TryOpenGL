@@ -74,14 +74,8 @@ int main() {
     // build and compile our shader program
     // ------------------------------------
     const Shader _2DShader("shaders/2Dv.hlsl", "shaders/2Df.hlsl");
-    const Shader _3DShader("shaders/3Dv.hlsl", "shaders/simple3Df.hlsl");
+    const Shader _3DShader("shaders/3Dv.hlsl", "shaders/3Df.hlsl");
 
-    //TODO: Change to triangle
-    glm::vec3 pointLightPositions[] = {
-        glm::vec3( 0.7f,  0.2f,  2.0f),
-        glm::vec3( 2.3f, -3.3f, -4.0f),
-        glm::vec3(-4.0f,  2.0f, -12.0f)
-    };
     Texture so_true("resources/sotrue.png");
     Sunny2D sun2D(0,_2DShader);
     std::vector<Merlin> many_merlins;
@@ -111,9 +105,32 @@ int main() {
         // -----
         processInput(window);
 
+        //Light
+        _3DShader.use();
+        _3DShader.setVec3("viewPos", camera.Position);
+        _3DShader.setFloat("material.shininess", 100.f);
+        //Dir light
+        _3DShader.setVec3("dirLight.direction", -20.f, -10.0f, -20.f);
+        _3DShader.setVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
+        _3DShader.setVec3("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
+        _3DShader.setVec3("dirLight.specular", 0.f, 0.f, 0.f);
+        //Spotlight
+        // spotLight
+        _3DShader.setVec3("spotLight.position", camera.Position);
+        _3DShader.setVec3("spotLight.direction", camera.Front);
+        _3DShader.setVec3("spotLight.ambient", 0.0f, 0.0f, 0.0f);
+        _3DShader.setVec3("spotLight.diffuse", 1.0f, 1.0f, 1.0f);
+        _3DShader.setVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
+        _3DShader.setFloat("spotLight.constant", 1.0f);
+        _3DShader.setFloat("spotLight.linear", 0.09f);
+        _3DShader.setFloat("spotLight.quadratic", 0.032f);
+        _3DShader.setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
+        _3DShader.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
+
+
         // render
         // ------
-        glClearColor(1.f, 0.9f, 1.f, 1.0f);
+        glClearColor(1.f-0.1*glm::min(5.f,currentFrame), 0.9f-0.09*glm::min(5.f,currentFrame), 1.f-0.1*glm::min(5.f,currentFrame), 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         so_true.bind();
 
