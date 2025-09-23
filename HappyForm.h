@@ -52,10 +52,10 @@ private:
         glm::vec3 P = C + glm::vec3(R * glm::vec4(p_local, 1.0f));
         glm::vec3 t_local = glm::vec3(-rx * sin(theta), ry * cos(theta), 0.0f);
         glm::vec3 t_world = glm::vec3(R * glm::vec4(t_local, 0.0f));
-        // glm::vec3 forward = glm::normalize(t_world);
-        // glm::vec3 up = glm::vec3(R * glm::vec4(glm::vec3(0,0,1), 0.0f)); // pick a suitable up (depends on your R)
-        // glm::quat orient = Quader(forward,up);  // glm::quatLookAt from GLM extension or build manually
-        return Transform({P, glm::vec3(0),{0.2,0.2,0.2f}});
+        glm::vec3 forward = glm::normalize(t_world);
+        float yaw = glm::degrees(atan2(forward.y, forward.x));
+        float pitch = glm::degrees(asin(forward.z));
+        return Transform({P, glm::vec3(pitch,yaw+90,0),{0.2,0.2,0.2f}});
     }
 };
 class Merlin {
