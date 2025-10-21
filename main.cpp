@@ -5,11 +5,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "include/shader.h"
-#include "include/texture.h"
+#include "include/Asset/shader.h"
+#include "include/Asset/texture.h"
 #include "include/camera.h"
-#include "MeshPlayer.h"
 #include "HappyForm.h"
+#include "include/Engine/PhysicsSystem.h"
 
 #include <iostream>
 
@@ -34,6 +34,9 @@ float lastFrame = 0.0f;
 
 // lighting
 glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+
+//GameObject Keep
+
 
 int main() {
     // glfw: initialize and configure
@@ -73,20 +76,13 @@ int main() {
     camera.setupShaderCameraBuffer();
     // build and compile our shader program
     // ------------------------------------
-    const Shader _2DShader("shaders/2Dv.hlsl", "shaders/2Df.hlsl");
-    const Shader _3DShader("shaders/3Dv.hlsl", "shaders/3Df.hlsl");
+    Asset::Shader _3DShader("shaders/3Dv.hlsl", "shaders/3Df.hlsl");
 
-    Texture so_true("resources/sotrue.png");
-    Sunny2D sun2D(0,_2DShader);
-    std::vector<Merlin> many_merlins;
-    many_merlins.push_back(Merlin(_3DShader,DEFAULT_TRANSFORM));
-    for (int i=0;i<7;i++) {
-        Transform rando_trans({glm::vec3((float)(4 - rand()%8),(float)(2 - rand()%4),(float)(4 - rand()%8)),glm::vec3(0,0,0),glm::vec3(1,1,1)});
-        many_merlins.push_back(Merlin(_3DShader,rando_trans));
-    }
-    float merlinCd = 0;
-    int merlinCount = 1;
-    std::vector<Texture> textures;
+    Asset::Texture so_true("resources/sotrue.png");
+    CreateMerlin(&_3DShader);
+    std::vector<Asset::Texture> textures;
+    // Model ourModel("resources/objects/hand/MH.obj");
+    // Model ourModel2("resources/objects/hand/MH.obj");
     textures.push_back(so_true);
 
     // Transform sunCenterTransform = {glm::vec3(0.0f, 0.0f, 0.f), glm::vec3(72.0f, 0.0f, 0.0f),glm::vec3(1.0f,1.0f,1.0f)};
@@ -104,7 +100,6 @@ int main() {
         // input
         // -----
         processInput(window);
-
         //Light
         _3DShader.use();
         _3DShader.setVec3("viewPos", camera.Position);
@@ -115,7 +110,6 @@ int main() {
         _3DShader.setVec3("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
         _3DShader.setVec3("dirLight.specular", 0.f, 0.f, 0.f);
         //Spotlight
-        // spotLight
         _3DShader.setVec3("spotLight.position", camera.Position);
         _3DShader.setVec3("spotLight.direction", camera.Front);
         _3DShader.setVec3("spotLight.ambient", 0.0f, 0.0f, 0.0f);
@@ -127,34 +121,19 @@ int main() {
         _3DShader.setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
         _3DShader.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
 
-
         // render
         // ------
         glClearColor(1.f-0.1*glm::min(5.f,currentFrame), 0.9f-0.09*glm::min(5.f,currentFrame), 1.f-0.1*glm::min(5.f,currentFrame), 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         so_true.bind();
-
-        if (currentFrame<5) sun2D.Update();
-        else sun2D.Destroy();
-
-        for (int i=0;i<merlinCount;i++) {
-            many_merlins[i].Update(deltaTime);
-            many_merlins[i].Draw();
-        }
-        merlinCd+=deltaTime;
-        if (merlinCount<8&&merlinCd>=5) {
-            merlinCd = 0;
-            merlinCount++;
-        }
-
-
+        Engine::ObjectManager::UpdateAll(deltaTime);
+        Engine::PhysicsSystem::Update(deltaTime);
+        //ourModel.Draw(_3DShader);
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
-
-    sun2D.Destroy();
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
@@ -215,4 +194,3 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
     camera.ProcessMouseScroll(static_cast<float>(yoffset));
 }
-
