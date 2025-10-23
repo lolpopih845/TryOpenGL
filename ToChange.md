@@ -1,7 +1,14 @@
 # Changes to be made in this thing.
 
-- **Mesh cannot be initialize between update.** Silent OpenGL error causing wrong ID being generated.
-- **Assimp didn't work.**
-- **Review da code**
+- (Optional : Merlin Dam Shader)
 
- 
+Todo After:
+- ********* MAKE POINTER ERROR PRINT ERROR (SEGMENTATION FAULT)
+- GameObject construct with name
+- Make all class printable.
+- Dedicate Input system.
+- Make camera a gameObject
+- ShaderManager class
+- Better FileSystem
+- Make SkyBox a GameObject (need to override render() or make render() more adaptive)
+
