@@ -6,15 +6,17 @@
 #include "transform.h"
 
 namespace Components {
-    class Collider : public Component {
+    class Collider : public Renderer {
     public:
         glm::vec3 center{0.0f};
         glm::vec3 size{1.0f};
         bool isTrigger = false;
-        Engine::Transform transform;
+        Components::Transform* transform = nullptr;
         std::unordered_set<Collider*> currentCollisions;
 
         void init() override;
+
+        explicit Collider(glm::vec3 center = glm::vec3(0), glm::vec3 size= glm::vec3(1));
 
         ~Collider() override;
 
@@ -24,12 +26,9 @@ namespace Components {
 
         void checkEndedCollisions();
 
-        virtual void onCollisionEnter(Collider* other) {};
-        virtual void onCollisionStay(Collider* other) {};
-        virtual void onCollisionExit(Collider* other) {};
-
         void onEnable() override;
         void onDisable() override;
+
     };
 }
 

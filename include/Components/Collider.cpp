@@ -3,34 +3,48 @@
 //
 
 #include "Collider.h"
+
+#include <iostream>
+#include <ostream>
+
 #include "../Engine/PhysicsSystem.h"
 
 namespace Components {
     void Collider::init() {
-        transform = gameObject->getComponent<Transform>()->getGlobalTransform();
+        transform = gameObject->getComponent<Transform>();
         Engine::PhysicsSystem::RegisterCollider(this);
     }
 
+    Collider::Collider(glm::vec3 center, glm::vec3 size) {
+        this->center = center;
+        this->size = size;
+    }
+
     Collider::~Collider() {
+        for (auto* other : currentCollisions)
+            other->currentCollisions.erase(this);
         Engine::PhysicsSystem::UnregisterCollider(this);
     }
 
     bool Collider::intersects(const Collider &other) const {
-        glm::vec3 aMin = transform.translation + center - size * 0.5f;
-        glm::vec3 aMax = transform.translation + center + size * 0.5f;
-        glm::vec3 bMin = other.transform.translation + other.center - other.size * 0.5f;
-        glm::vec3 bMax = other.transform.translation + other.center + other.size * 0.5f;
-
+        glm::vec3 aMin = transform->getGlobalTransform().translation + center - size * 0.5f;
+        glm::vec3 aMax = transform->getGlobalTransform().translation + center + size * 0.5f;
+        glm::vec3 bMin = other.transform->getGlobalTransform().translation + other.center - other.size * 0.5f;
+        glm::vec3 bMax = other.transform->getGlobalTransform().translation + other.center + other.size * 0.5f;
         return (aMin.x <= bMax.x && aMax.x >= bMin.x) &&
                (aMin.y <= bMax.y && aMax.y >= bMin.y) &&
                (aMin.z <= bMax.z && aMax.z >= bMin.z);
     }
     void Collider::handleCollision(Collider* other) {
         if (currentCollisions.find(other) == currentCollisions.end()) {
-            onCollisionEnter(other);
+            for (const auto &comp : gameObject->components) {
+                comp->onCollisionEnter(other);
+            }
             currentCollisions.insert(other);
         } else {
-            onCollisionStay(other);
+            for (const auto &comp : gameObject->components) {
+                comp->onCollisionStay(other);
+            }
         }
     }
     void Collider::checkEndedCollisions() {
@@ -38,7 +52,9 @@ namespace Components {
         for (Collider* c : currentCollisions) {
             if (!intersects(*c)) {
                 ended.push_back(c);
-                onCollisionExit(c);
+                for (const auto &comp : gameObject->components) {
+                    comp->onCollisionExit(c);
+                }
             }
         }
         for (Collider* c : ended)
@@ -53,4 +69,5 @@ namespace Components {
         Engine::PhysicsSystem::UnregisterCollider(this);
         currentCollisions.clear();
     }
-} // Components
+
+} // namespace Components

@@ -18,14 +18,17 @@ namespace Components {
 
     void Transform::setPosition(const glm::vec3 t) {
         local.translation = t;
+        updated = false;
     }
 
     void Transform::setRotation(const glm::vec3 t) {
         local.rotation = t;
+        updated = false;
     }
 
     void Transform::setScale(const glm::vec3 t) {
         local.scale = t;
+        updated = false;
     }
 
     void Transform::update(float dTime){
@@ -37,7 +40,7 @@ namespace Components {
 
         if (parentTransform) {
             global.scale = parentTransform->global.scale * local.scale;
-            global.rotation = parentTransform->global.rotation * local.rotation;
+            global.rotation = parentTransform->global.rotation + local.rotation;
             global.translation = glm::quat(glm::radians(parentTransform->global.rotation)) * (parentTransform->global.scale * local.translation) + parentTransform->global.translation;
         }
         else

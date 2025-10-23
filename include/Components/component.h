@@ -4,6 +4,7 @@
 
 namespace Engine {class GameObject;}
 namespace Components {
+    class Collider;
     class Component {
     public:
         Engine::GameObject* gameObject = nullptr;
@@ -18,6 +19,9 @@ namespace Components {
         }
         virtual void onEnable() {}
         virtual void onDisable() {}
+        virtual void onCollisionEnter(Collider* other) {}
+        virtual void onCollisionStay(Collider* other) {}
+        virtual void onCollisionExit(Collider* other) {}
         bool isEnabled() const { return enabled; }
     private:
         bool enabled = true;

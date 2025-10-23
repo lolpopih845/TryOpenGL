@@ -4,10 +4,13 @@
 
 #include "PhysicsSystem.h"
 #include <algorithm>
+#include <iostream>
+
 #include "../Components/Collider.h"
 
 namespace Engine {
     std::vector<Components::Collider*> PhysicsSystem::colliders;
+    std::vector<Components::Collider*> PhysicsSystem::pending_destroy;
     void PhysicsSystem::RegisterCollider(Components::Collider *c) {
         colliders.push_back(c);
     }

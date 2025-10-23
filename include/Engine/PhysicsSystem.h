@@ -11,6 +11,7 @@ namespace Engine {
     class PhysicsSystem {
     public:
         static std::vector<Components::Collider*> colliders;
+        static std::vector<Components::Collider*> pending_destroy;
 
         static void RegisterCollider(Components::Collider* c);
 

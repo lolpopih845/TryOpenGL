@@ -2,7 +2,10 @@
 
 #include <iostream>
 namespace Engine {
-    GameObject::GameObject(GameObject *parent) : parent(parent) {
+    GameObject::GameObject(GameObject *parent) {
+        if (parent) {
+            parent->addChild(this);
+        }
         addComponent<Components::Transform>();
     }
 

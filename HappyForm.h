@@ -3,7 +3,13 @@
 #include "MeshPlayer.h"
 #include "include/BaseObject/Mesh.h"
 #include "include/Engine/ObjectManager.h"
-
+#include "include/Asset/ModelLoader.h"
+#include "include/Components/Collider.h"
+inline Engine::GameObject* CreateModelObject(const std::string& path) {
+    Engine::GameObject* obj = Engine::ObjectManager::CreateObject<Engine::GameObject>();
+    Asset::ModelLoader::LoadModelToGameObject(obj,path);
+    return obj;
+}
 
 namespace Components {
     class Rotater : public Component {
@@ -73,23 +79,19 @@ inline Engine::GameObject* CreateRotater(Asset::Shader& shader, Engine::Transfor
     return obj;
 }
 
-class Hand : public Engine::GameObject {
-
-};
-
-
 namespace Components {
     class Merlin : public Component {
     public:
+        float gameTime = 0;
         float time = 0;
         unsigned int state = 0;
         float centerProg = 0;
         int last_state = 0;
+        int hp = 3;
         Asset::Shader* shader;
         Transform *transform;
         Mesh* center;
-        //Hand* hands1;
-        //Hand* hands2;
+        Camera* camera;
         Engine::GameObject* rotater1;
         Engine::GameObject* rotater2;
         void init() override {
@@ -97,12 +99,12 @@ namespace Components {
             center = gameObject->getComponent<Mesh>();
             CreatingSphere(*center, 0);
             transform = gameObject->getComponent<Transform>();
-            transform->setTransform(Engine::Transform({{0,0,-1},glm::vec3(90,0,0),glm::vec3(1)}));
         }
 
         void update(float dTime) override {
             time+=dTime;
             state = std::min(2,(int)time/3);
+            if (hp<=0) Engine::ObjectManager::DestroyObject(gameObject);
             if (state != last_state && state == 2) {
                 last_state = state;
                 rotater1 = CreateRotater(*shader,Engine::Transform({glm::vec3(0,0,0),{30,0,0},{1.5,1,0}}),0,0.02f);
@@ -120,8 +122,8 @@ namespace Components {
                     }
                     break;
                 case 2:
-                    transform->setTransform(Engine::Transform({{0,sin(time)/2,-1},glm::vec3(90,0,time*250),glm::vec3(1)}));
-                    //for (int i=0;i<rotaters.size();i++) rotaters[i].Update(time);
+                    transform->setPosition(transform->getTransform().translation+glm::normalize(camera->Position - transform->getGlobalTransform().translation)*dTime*(2.f+gameTime*0.05f));
+                    transform->setRotation(glm::vec3(90,0,time*250));
                     break;
                 default:
                     break;
@@ -130,11 +132,88 @@ namespace Components {
     };
 }
 
-inline Engine::GameObject* CreateMerlin(Asset::Shader* shader) {
+namespace Components {
+    class Note : public Component {
+    public:
+        Transform* transform;
+        Collider* collider;
+        glm::vec3 velocity;
+        float lifeTime = 5;
+        void init() override {
+            transform = gameObject->getComponent<Transform>();
+            collider = gameObject->getComponent<Collider>();
+        }
+        void update(float dTime) override {
+            transform->setPosition(transform->getGlobalTransform().translation + velocity*dTime*20.f);
+            transform->setRotation(transform->getGlobalTransform().rotation + glm::vec3(0, dTime*360, 0));
+            lifeTime -= dTime;
+            if (lifeTime < 0) Engine::ObjectManager::DestroyObject(gameObject);
+        }
+        void onCollisionEnter(Collider *other) override {
+            if (other->gameObject->name == "merlin") {
+                other->gameObject->getComponent<Merlin>()->hp-=1;
+                Engine::ObjectManager::DestroyObject(gameObject);
+            }
+        }
+    };
+}
+inline Engine::GameObject* CreateNote(glm::vec3 pos, glm::vec3 vel) {
+    Engine::GameObject* obj = CreateModelObject("resources/objects/note/note.obj");
+    obj->addComponent<Components::Collider>(glm::vec3(0),glm::vec3(0.25));
+    obj->addComponent<Components::Note>();
+    obj->getComponent<Components::Transform>()->setTransform({pos,glm::vec3(0,0,0),glm::vec3(1)});
+    obj->getComponent<Components::Note>()->velocity = vel;
+    obj->name = "note";
+    return obj;
+}
+inline Engine::GameObject* CreateMerlin(Asset::Shader* shader,Camera *camera,float timey) {
     Engine::GameObject* obj = Engine::ObjectManager::CreateObject<Engine::GameObject>();
     obj->addComponent<Components::Mesh>();
     obj->getComponent<Components::Mesh>()->shader = shader;
     obj->addComponent<Components::Merlin>();
+    obj->getComponent<Components::Merlin>()->gameTime = timey;
+    obj->getComponent<Components::Merlin>()->camera = camera;
+    obj->getComponent<Components::Transform>()->setTransform(Engine::Transform({glm::vec3((float)(10 - rand()%20),(float)(5 - rand()%10),(float)(10 - rand()%20))+camera->Position,glm::vec3(90,0,0),glm::vec3(1)}));
+    obj->addComponent<Components::Collider>(glm::vec3(0),glm::vec3(1));
+    obj->name = "merlin";
+    return obj;
+}
+
+namespace Components {
+    class Tp : public Component {
+        public:
+        Transform* transform;
+        Camera* camera;
+        float trigger=0;
+        void init() override {
+            transform = gameObject->getComponent<Transform>();
+            //
+            transform->setScale(glm::vec3(0.075f));
+        }
+        void update(float dTime) override {
+            if (trigger>0) trigger-=dTime*120;
+            glm::quat camRot = glm::quat(glm::vec3(0., -glm::radians(camera->Yaw), glm::radians(camera->Pitch)));
+            glm::vec3 worldOffset = camRot * glm::vec3(0.15,-0.05,0.1);
+            transform->setPosition(camera->Position + worldOffset);
+            transform->setRotation(glm::vec3(0,-camera->Yaw,camera->Pitch+trigger));
+        }
+        void Fire() {
+            if (trigger>0) return;
+            trigger = 45;
+            //Fire Note
+            CreateNote(camera->Position,glm::vec3(
+                glm::cos(glm::radians(camera->Pitch)) * glm::cos(glm::radians(camera->Yaw)),
+                glm::sin(glm::radians(camera->Pitch)),
+                glm::cos(glm::radians(camera->Pitch)) * glm::sin(glm::radians(camera->Yaw))
+                ));
+        }
+    };
+}
+
+inline Engine::GameObject* CreateTrumpet(Camera* camera) {
+    Engine::GameObject* obj = CreateModelObject("resources/objects/doot/doot.obj");
+    obj->addComponent<Components::Tp>();
+    obj->getComponent<Components::Tp>()->camera = camera;
     return obj;
 }
 

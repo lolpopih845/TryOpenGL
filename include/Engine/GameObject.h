@@ -12,6 +12,7 @@ namespace Engine {
     public:
         bool active = true;
         GameObject* parent = nullptr;
+        std::string name;
         std::vector<GameObject*> children;
         std::vector<std::unique_ptr<Components::Component>> components;
 
@@ -45,6 +46,10 @@ namespace Engine {
             return result;
         }
 
+        std::vector<GameObject*> getChildren() {
+            return children;
+        }
+
         void init() const;
 
         void update(float dTime) const;
@@ -53,6 +58,7 @@ namespace Engine {
 
         bool isActive() const;
     };
+
 }
 
 

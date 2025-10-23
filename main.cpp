@@ -15,6 +15,7 @@
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
 
@@ -36,7 +37,7 @@ float lastFrame = 0.0f;
 glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
 
 //GameObject Keep
-
+Engine::GameObject* trumpet = nullptr;
 
 int main() {
     // glfw: initialize and configure
@@ -62,6 +63,7 @@ int main() {
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetMouseButtonCallback(window, mouse_button_callback);
     glfwSetScrollCallback(window, scroll_callback);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
@@ -74,20 +76,22 @@ int main() {
     }
     glEnable(GL_DEPTH_TEST);
     camera.setupShaderCameraBuffer();
+
     // build and compile our shader program
     // ------------------------------------
     Asset::Shader _3DShader("shaders/3Dv.hlsl", "shaders/3Df.hlsl");
+    Asset::Shader skyboxShader("shaders/SkyBoxV.hlsl", "shaders/SkyBoxF.hlsl");
+    Asset::Shader _3DSimpleShader("shaders/3Dv.hlsl", "shaders/simple3Df.hlsl");
 
     Asset::Texture so_true("resources/sotrue.png");
-    CreateMerlin(&_3DShader);
+
+    float merlinSpawnTime = 0.0f;
     std::vector<Asset::Texture> textures;
     // Model ourModel("resources/objects/hand/MH.obj");
     // Model ourModel2("resources/objects/hand/MH.obj");
     textures.push_back(so_true);
-
-    // Transform sunCenterTransform = {glm::vec3(0.0f, 0.0f, 0.f), glm::vec3(72.0f, 0.0f, 0.0f),glm::vec3(1.0f,1.0f,1.0f)};
-    // Mesh sunCenter3D(std::vector<Vertex>(), std::vector<unsigned int>(), textures, sunCenterTransform ,sun3DTransform);
-    // CreatingSphere(sunCenter3D,0);
+    FrickingSkyBox fsb = CreateSkyBox(skyboxShader);
+    trumpet = CreateTrumpet(&camera);
 
     camera.SetUpCameraPerspective(glm::radians(45.0f),(float)SCR_WIDTH / (float)SCR_HEIGHT,0.1f,10.f);
     // render loop
@@ -97,6 +101,7 @@ int main() {
         const float currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
+
         // input
         // -----
         processInput(window);
@@ -106,7 +111,7 @@ int main() {
         _3DShader.setFloat("material.shininess", 100.f);
         //Dir light
         _3DShader.setVec3("dirLight.direction", -20.f, -10.0f, -20.f);
-        _3DShader.setVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
+        _3DShader.setVec3("dirLight.ambient", 1.f, 1.f, 1.f);
         _3DShader.setVec3("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
         _3DShader.setVec3("dirLight.specular", 0.f, 0.f, 0.f);
         //Spotlight
@@ -121,14 +126,23 @@ int main() {
         _3DShader.setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
         _3DShader.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
 
-        // render
-        // ------
+        skyboxShader.setFloat("time",glfwGetTime());
+
+        //render
         glClearColor(1.f-0.1*glm::min(5.f,currentFrame), 0.9f-0.09*glm::min(5.f,currentFrame), 1.f-0.1*glm::min(5.f,currentFrame), 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         so_true.bind();
-        Engine::ObjectManager::UpdateAll(deltaTime);
         Engine::PhysicsSystem::Update(deltaTime);
-        //ourModel.Draw(_3DShader);
+        Engine::ObjectManager::UpdateAll(deltaTime);
+
+        UpdateSkyBox(fsb,camera);
+
+        if (merlinSpawnTime<0.0f) {
+            merlinSpawnTime = 5.f-currentFrame/100.0f;
+            CreateMerlin(&_3DShader,&camera,currentFrame);
+        }
+        merlinSpawnTime -= deltaTime;
+
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
@@ -163,8 +177,6 @@ void processInput(GLFWwindow *window)
 // ---------------------------------------------------------------------------------------------
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-    // make sure the viewport matches the new window dimensions; note that width and
-    // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
 }
 void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
@@ -187,6 +199,13 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 
     camera.ProcessMouseMovement(xoffset, yoffset);
 }
+
+void mouse_button_callback(GLFWwindow *window, int button, int action, int mods) {
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+        trumpet->getComponent<Components::Tp>()->Fire();
+    }
+}
+
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
 // ----------------------------------------------------------------------

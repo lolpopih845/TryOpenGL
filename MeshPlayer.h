@@ -2,6 +2,8 @@
 #include <iostream>
 #include <vector>
 #include "include/Asset/ModelLoader.h"
+#include "include/BaseObject/Mesh.h"
+#include "include/Engine/ObjectManager.h"
 
 inline void CreatingSphere(Components::Mesh &mesh, const int progress) {
     //Stat
@@ -126,61 +128,88 @@ inline void CreatePrism(Components::Mesh &mesh) {
     mesh.updateMeshes();
 }
 
-// class CreateSkyBox {
-// public:
-//     bool active;
-//     Shader shader;
-//     Mesh sky;
-//
-//     explicit Sunny2D(const int id,const Shader &shader): shader(shader) {
-//         sky = Mesh();
-//         frame = 0;
-//         active = true;
-//         model = glm::mat4(1.0f);
-//         centerT = glm::mat4(1.0f);
-//         for (int i = 0; i < 8; i++) rayT[i] = {glm::mat4(1.0f)};
-//         sunShader.use();
-//         sunShader.setInt("texture1",0);
-//     }
-//
-//     void Draw() {
-//         sunShader.use();
-//         glBindVertexArray(center.VAO);
-//         sunShader.setMat4("model", model*centerT);
-//         glDrawElements(GL_TRIANGLES, center.indexCount, GL_UNSIGNED_INT, nullptr);
-//         for (int i = 0; i < 8; i++) {
-//             glBindVertexArray(ray.VAO);
-//             sunShader.setMat4("model", model*rayT[i]);
-//             glDrawElements(GL_TRIANGLES, ray.indexCount, GL_UNSIGNED_INT, nullptr);
-//         }
-//
-//     }
-//     void Update() {
-//         ResetTransform();
-//         centerT = glm::scale(centerT, glm::vec3(0.75 + abs(sin((float)glfwGetTime()*2.5))*0.25, 0.75+abs(sin((float)glfwGetTime()*2.5))*0.25, 1.0f));
-//         const float radius = 0.7;
-//         for (int i=0;i<8;i++) {
-//             const float angle = i * glm::two_pi<float>() / 8 + sin(glfwGetTime()*2.25);
-//             glm::vec3 pos = glm::vec3(cos(angle), sin(angle), 0.0f) * radius;
-//             rayT[i] = glm::translate(rayT[i], pos);
-//             const float rotation = angle + glm::half_pi<float>();
-//             rayT[i] = glm::rotate(rayT[i], rotation, glm::vec3(0, 0, 1));
-//         }
-//         model = glm::translate(model, glm::vec3(0, 0, -2));
-//         //transform = glm::rotate(transform, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-//         Draw();
-//     }
-//     void ResetTransform() {
-//         model = glm::mat4(1.0f);
-//         centerT = glm::mat4(1.0f);
-//         for(int i=0;i<8;i++) rayT[i] = {glm::mat4(1.0f)};
-//     }
-//     void Destroy() const {
-//         glDeleteVertexArrays(1, &center.VAO);
-//         glDeleteBuffers(1, &center.VBO);
-//         glDeleteBuffers(1, &center.EBO);
-//         glDeleteVertexArrays(1, &ray.VAO);
-//         glDeleteBuffers(1, &ray.VBO);
-//         glDeleteBuffers(1, &ray.EBO);
-//     }
-// };
+struct FrickingSkyBox {
+    Asset::Shader shader;
+    unsigned int VAO;
+    Asset::Texture texture;
+};
+
+inline FrickingSkyBox CreateSkyBox(Asset::Shader shader) {
+    float skyboxVertices[] = {
+        // positions
+        -1.0f,  1.0f, -1.0f,
+        -1.0f, -1.0f, -1.0f,
+         1.0f, -1.0f, -1.0f,
+         1.0f, -1.0f, -1.0f,
+         1.0f,  1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f,
+
+        -1.0f, -1.0f,  1.0f,
+        -1.0f, -1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f,
+        -1.0f,  1.0f,  1.0f,
+        -1.0f, -1.0f,  1.0f,
+
+         1.0f, -1.0f, -1.0f,
+         1.0f, -1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f, -1.0f,
+         1.0f, -1.0f, -1.0f,
+
+        -1.0f, -1.0f,  1.0f,
+        -1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f, -1.0f,  1.0f,
+        -1.0f, -1.0f,  1.0f,
+
+        -1.0f,  1.0f, -1.0f,
+         1.0f,  1.0f, -1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+        -1.0f,  1.0f,  1.0f,
+        -1.0f,  1.0f, -1.0f,
+
+        -1.0f, -1.0f, -1.0f,
+        -1.0f, -1.0f,  1.0f,
+         1.0f, -1.0f, -1.0f,
+         1.0f, -1.0f, -1.0f,
+        -1.0f, -1.0f,  1.0f,
+         1.0f, -1.0f,  1.0f
+    };
+    unsigned int skyboxVAO, skyboxVBO;
+    glGenVertexArrays(1, &skyboxVAO);
+    glGenBuffers(1, &skyboxVBO);
+    glBindVertexArray(skyboxVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+     std::vector<std::string> f = {
+        "resources/sky3.jpg",
+        "resources/sky3.jpg",
+        "resources/sky1.jpg",
+        "resources/sky1.jpg",
+        "resources/sky2.jpg",
+        "resources/sky2.jpg"};
+    const Asset::Texture t(f);
+    shader.use();
+    shader.setInt("skybox", 0);
+    return {shader,skyboxVAO,t};
+}
+
+inline void UpdateSkyBox(FrickingSkyBox f, const Camera &camera) {
+    glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
+    f.shader.use();
+    f.shader.setMat4("view", glm::mat4(glm::mat3(camera.GetViewMatrix())));
+    // skybox cube
+    glBindVertexArray(f.VAO);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, f.texture.ID);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    glBindVertexArray(0);
+    glDepthFunc(GL_LESS); // set depth function back to default
+}
+

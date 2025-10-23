@@ -47,7 +47,7 @@ namespace Asset {
     return true;
 }
 
-bool Texture::loadCubemap(std::string paths[],const bool flipOnLoad,
+bool Texture::loadCubemap(const std::vector<std::string>& faces,const bool flipOnLoad,
                            const GLint wrapS, const GLint wrapT, const GLint wrapR,
                            const GLint minFilter, const GLint magFilter)
 {
@@ -58,9 +58,9 @@ bool Texture::loadCubemap(std::string paths[],const bool flipOnLoad,
     glBindTexture(GL_TEXTURE_CUBE_MAP, ID);
 
     int width, height, nrChannels;
-    for (unsigned int i = 0; i < paths->length(); i++)
+    for (unsigned int i = 0; i < faces.size(); i++)
     {
-        unsigned char *data = stbi_load(paths[i].c_str(), &width, &height, &nrChannels, 0);
+        unsigned char *data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
         if (data)
         {
             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -68,7 +68,7 @@ bool Texture::loadCubemap(std::string paths[],const bool flipOnLoad,
         }
         else
         {
-            std::cerr << "Cubemap texture failed to load at path: " << paths[i] << std::endl;
+            std::cerr << "Cubemap texture failed to load at path: " << faces[i] << std::endl;
             stbi_image_free(data);
         }
     }
@@ -92,7 +92,7 @@ Texture::Texture(const char *path, const std::string &type, const bool flip, con
     loadFromFile(path, flip, wrapS, wrapT, minFilter, magFilter);
 }
 
-Texture::Texture(std::string faces[],bool flipOnLoad,
+Texture::Texture(const std::vector<std::string>& faces,bool flipOnLoad,
                       GLint wrapS, GLint wrapT, GLint wrapR,
                       GLint minFilter, GLint magFilter) {
     this->path = faces[0].c_str();

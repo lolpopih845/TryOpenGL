@@ -21,6 +21,9 @@ namespace Engine {
     private:
         static inline std::vector<std::unique_ptr<GameObject>> active_objects;
         static inline std::vector<std::unique_ptr<GameObject>> pending_objects;
+        static inline std::vector<GameObject*> pending_destroy;
+
+        static void CleanupDestroyedObjects();
     };
 
 }
