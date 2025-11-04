@@ -12,15 +12,19 @@
 #include <string>
 #include <fstream>
 #include <vector>
+#include "../Asset/skeleton.h"
 
 namespace Asset {
 class ModelLoader {
 public:
     static std::vector<Texture> textures_loaded;
-    static void LoadModelToGameObject(Engine::GameObject* parent, const std::string& path);
+    static Engine::GameObject* LoadModelGameObject(const std::string& path,Shader* shader = nullptr, std::string id = "");
 private:
-    static void processNode(Engine::GameObject* parent,const aiNode* node, const aiScene* scene, const std::string& directory);
-    static void processMesh(Engine::GameObject* parent, aiMesh* mesh, const aiScene* scene, const std::string& directory);
+    static void processNode(Engine::GameObject* parent,const aiNode* node, const aiScene* scene, const std::string& directory,Shader* shader, Skeleton* skeleton);
+    static void processMesh(Engine::GameObject* parent, aiMesh* mesh, const aiScene* scene, const std::string& directory,Shader* shader, Skeleton* skeleton);
+
+    static void ExtractBoneWeightForVertices(std::vector<Engine::Vertex>& vertices, aiMesh* mesh, Skeleton* skeleton);
+
     static std::vector<Texture> loadMaterialTextures(const aiMaterial* mat, aiTextureType type, const std::string& typeName, const std::string& directory);
 };
 

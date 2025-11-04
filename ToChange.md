@@ -1,6 +1,10 @@
 # Changes to be made in this thing.
 
-- (Optional : Merlin Dam Shader)
+TODO:
+- Component : Bone (Keep bone), Animator, Animation?
+- Implement animation stuff
+- Make character flying
+- Make more attack?
 
 Todo After:
 - ********* MAKE POINTER ERROR PRINT ERROR (SEGMENTATION FAULT)

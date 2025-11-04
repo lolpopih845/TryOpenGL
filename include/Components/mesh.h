@@ -40,7 +40,9 @@ namespace Components {
                        const std::vector<Asset::Texture> &textures,
                       bool use_tangent = false,
                       bool use_skinning = false);
-        void updateMeshes(bool use_tangent = false, bool use_skinning=false);
+        void SetSkinning(bool use_skinning);
+        void SetTangent(bool use_tangent);
+        void updateMeshes() const;
         void render() override;
 
 

@@ -9,6 +9,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "Engine/GameObject.h"
+
 enum Camera_Movement {
     FORWARD,
     BACKWARD,
@@ -56,12 +58,14 @@ public:
     void ProcessMouseScroll(float yoffset);
     //Setup Buffer after glfw is setted up
     void setupShaderCameraBuffer();
+    void UpdateCam(Engine::GameObject* player);
 
 private:
+    void updateCameraVectors();
     unsigned int UBO = 0;
     glm::mat4 projection;
     // calculates the front vector from the Camera's (updated) Euler Angles
-    void updateCameraVectors();
+
 
 };
 

@@ -16,13 +16,24 @@ namespace Components {
         use_skinning = use_skinning_;
     }
 
+    void Mesh::SetSkinning(const bool use_skinning) {
+        this->use_skinning = use_skinning;
+        updateMeshes();
+    }
+
+    void Mesh::SetTangent(bool use_tangent) {
+        this->use_tangent = use_tangent;
+        updateMeshes();
+    }
+
+
     void Mesh::init()
     {
         glGenVertexArrays(1, &VAO);
         glGenBuffers(1, &VBO);
         glGenBuffers(1, &EBO);
 
-        updateMeshes(this->use_tangent, this->use_skinning);
+        updateMeshes();
     }
 
     void Mesh::render() {
@@ -61,10 +72,7 @@ namespace Components {
 
 
 
-void Mesh::updateMeshes(bool use_tangent_, bool use_skinning_) {
-    use_tangent = use_tangent_;
-    use_skinning = use_skinning_;
-
+void Mesh::updateMeshes() const {
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Engine::Vertex), vertices.data(), GL_STATIC_DRAW);

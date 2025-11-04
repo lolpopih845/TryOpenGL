@@ -6,6 +6,9 @@
 
 #include <glm/gtc/type_ptr.inl>
 #include <fstream>
+#include <glm/gtc/quaternion.hpp>
+
+
 
 Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
 {
@@ -24,7 +27,7 @@ Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float u
     Yaw = yaw;
     Pitch = pitch;
     projection = glm::mat4(1.f);
-    updateCameraVectors();
+    //updateCameraVectors();
 }
 
 // returns the view matrix calculated using Euler Angles and the LookAt Matrix
@@ -34,22 +37,24 @@ glm::mat4 Camera::GetViewMatrix() const {
 
 void Camera::SetUpCameraPerspective(float fovY, const float aspect, float near, float far) {
     projection = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 100.0f);
-    updateCameraVectors();
+    //updateCameraVectors();
 }
 
 // processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
 void Camera::ProcessKeyboard(const Camera_Movement direction, const float deltaTime)
 {
-    const float velocity = MovementSpeed * deltaTime;
-    if (direction == FORWARD)
-        Position += Front * velocity;
-    if (direction == BACKWARD)
-        Position -= Front * velocity;
-    if (direction == LEFT)
-        Position -= Right * velocity;
-    if (direction == RIGHT)
-        Position += Right * velocity;
-    updateCameraVectors();
+    //FPS
+
+    // const float velocity = MovementSpeed * deltaTime;
+    // if (direction == FORWARD)
+    //     Position += Front * velocity;
+    // if (direction == BACKWARD)
+    //     Position -= Front * velocity;
+    // if (direction == LEFT)
+    //     Position -= Right * velocity;
+    // if (direction == RIGHT)
+    //     Position += Right * velocity;
+    // updateCameraVectors();
 }
 
 // processes input received from a mouse input system. Expects the offset value in both the x and y direction.
@@ -64,14 +69,14 @@ void Camera::ProcessMouseMovement(float xoffset, float yoffset, GLboolean constr
     // make sure that when pitch is out of bounds, screen doesn't get flipped
     if (constrainPitch)
     {
-        if (Pitch > 89.0f)
-            Pitch = 89.0f;
-        if (Pitch < -89.0f)
-            Pitch = -89.0f;
+        if (Pitch > 45.0f)
+            Pitch = 45.0f;
+        if (Pitch < -30.0f)
+            Pitch = -30.0f;
     }
 
     // update Front, Right and Up Vectors using the updated Euler angles
-    updateCameraVectors();
+    //updateCameraVectors();
 }
 
 // processes input received from a mouse scroll-wheel event. Only requires to be input on the vertical wheel-axis
@@ -100,6 +105,15 @@ void Camera::updateCameraVectors() {
     glBindBuffer(GL_UNIFORM_BUFFER, UBO);
     glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(GetViewMatrix()));
     glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(projection));
+}
+void Camera::UpdateCam(Engine::GameObject* player) {
+    glm::vec3 target = player->getComponent<Components::Transform>()->getGlobalTransform().translation;
+    Position = target + glm::quat(glm::vec3(glm::radians(Pitch), glm::radians(Yaw), 0.0f)) * glm::vec3(0,0,10);
+    if (UBO == 0) return;
+    glBindBuffer(GL_UNIFORM_BUFFER, UBO);
+    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(glm::lookAt(Position, target, Up)));
+    glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(projection));
+    player->getComponent<Components::Transform>()->setRotation({0,Pitch+180,0});
 }
 
 void Camera::setupShaderCameraBuffer() {

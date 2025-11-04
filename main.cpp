@@ -13,6 +13,9 @@
 
 #include <iostream>
 
+#include "include/Asset/AnimLoader.h"
+#include "include/Asset/asset.h"
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
@@ -38,6 +41,7 @@ glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
 
 //GameObject Keep
 Engine::GameObject* trumpet = nullptr;
+Engine::GameObject* monster = nullptr;
 
 int main() {
     // glfw: initialize and configure
@@ -81,17 +85,22 @@ int main() {
     // ------------------------------------
     Asset::Shader _3DShader("shaders/3Dv.hlsl", "shaders/3Df.hlsl");
     Asset::Shader skyboxShader("shaders/SkyBoxV.hlsl", "shaders/SkyBoxF.hlsl");
-    Asset::Shader _3DSimpleShader("shaders/3Dv.hlsl", "shaders/simple3Df.hlsl");
+    Asset::Shader boneShader("shaders/BoneV.hlsl", "shaders/BoneF.hlsl");
 
     Asset::Texture so_true("resources/sotrue.png");
 
     float merlinSpawnTime = 0.0f;
     std::vector<Asset::Texture> textures;
-    // Model ourModel("resources/objects/hand/MH.obj");
-    // Model ourModel2("resources/objects/hand/MH.obj");
-    textures.push_back(so_true);
+    textures.push_back(so_true); //Will be later save in asset.h
     FrickingSkyBox fsb = CreateSkyBox(skyboxShader);
-    trumpet = CreateTrumpet(&camera);
+    //trumpet = CreateTrumpet(&camera);
+
+    monster = Asset::ModelLoader::LoadModelGameObject("resources/objects/mixamoBoy/Neutral.fbx",&boneShader,"mixamoBoy");
+    Asset::Asset<Asset::Animation>::Load("Neutral",Asset::LoadAnimation("resources/objects/mixamoBoy/Neutral.fbx"));
+    Asset::Asset<Asset::Animation>::Load("Walking",Asset::LoadAnimation("resources/objects/mixamoBoy/Walking.fbx"));
+    monster->addComponent<Components::MixamoBoy>();
+    monster->getComponent<Components::MixamoBoy>()->camera = &camera;
+    monster->name = "monster";
 
     camera.SetUpCameraPerspective(glm::radians(45.0f),(float)SCR_WIDTH / (float)SCR_HEIGHT,0.1f,10.f);
     // render loop
@@ -139,7 +148,7 @@ int main() {
 
         if (merlinSpawnTime<0.0f) {
             merlinSpawnTime = 5.f-currentFrame/100.0f;
-            CreateMerlin(&_3DShader,&camera,currentFrame);
+            CreateMerlin(&_3DShader,monster,currentFrame);
         }
         merlinSpawnTime -= deltaTime;
 
@@ -164,13 +173,17 @@ void processInput(GLFWwindow *window)
         glfwSetWindowShouldClose(window, true);
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.ProcessKeyboard(FORWARD, deltaTime);
+        monster->getComponent<Components::MixamoBoy>()->accel[2] = 5;
+        //camera.ProcessKeyboard(FORWARD, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.ProcessKeyboard(BACKWARD, deltaTime);
+        monster->getComponent<Components::MixamoBoy>()->accel[2] = -5;
+        //camera.ProcessKeyboard(BACKWARD, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.ProcessKeyboard(LEFT, deltaTime);
+        monster->getComponent<Components::MixamoBoy>()->accel[0] = -5;
+        //camera.ProcessKeyboard(LEFT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.ProcessKeyboard(RIGHT, deltaTime);
+        monster->getComponent<Components::MixamoBoy>()->accel[0] = 5;
+        //camera.ProcessKeyboard(RIGHT, deltaTime);
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
@@ -201,9 +214,9 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 }
 
 void mouse_button_callback(GLFWwindow *window, int button, int action, int mods) {
-    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-        trumpet->getComponent<Components::Tp>()->Fire();
-    }
+    // if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+    //     trumpet->getComponent<Components::Tp>()->Fire();
+    // }
 }
 
 

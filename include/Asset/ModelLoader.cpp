@@ -7,38 +7,68 @@
 #include <assimp/postprocess.h>
 #include <iostream>
 
+#include "../Components/animator.h"
 #include "../BaseObject/Mesh.h"
+#include "AnimLoader.h"
+#include "asset.h"
+#include "../BaseObject/ModelObject.h"
 
 namespace Asset {
     std::vector<Texture> ModelLoader::textures_loaded;
 
-    void ModelLoader::LoadModelToGameObject(Engine::GameObject* parent, const std::string& path) {
+    void SetVertexBoneDataToDefault(Engine::Vertex& vertex)
+    {
+        for (int i = 0; i < MAX_BONE_INFLUENCE; i++)
+        {
+            vertex.m_BoneIDs[i] = -1;
+            vertex.m_Weights[i] = 0.0f;
+        }
+    }
+
+    Engine::GameObject* ModelLoader::LoadModelGameObject(const std::string& path,Shader* shader, std::string id) {
         Assimp::Importer importer;
         const aiScene* scene = importer.ReadFile(path,
-            aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+        aiProcess_Triangulate |
+                aiProcess_JoinIdenticalVertices |
+                aiProcess_GenSmoothNormals |
+                aiProcess_LimitBoneWeights |
+                aiProcess_GlobalScale |
+                aiProcess_OptimizeMeshes |
+                aiProcess_OptimizeGraph);
 
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
             std::cout << "ERROR::ASSIMP:: " << importer.GetErrorString() << std::endl;
-            return;
+            return nullptr;
+        }
+        std::shared_ptr<Skeleton> skeleton = nullptr;
+        if (id!="") {
+            skeleton = LoadSkeleton(path);
+            Asset<Skeleton>::Load(id, skeleton);
         }
 
         const std::string directory = path.substr(0, path.find_last_of('/'));
-        processNode(parent, scene->mRootNode, scene, directory);
+        Engine::GameObject* rootGO = Engine::ObjectManager::CreateObject<Prefab::ModelObject>();
+        processNode(rootGO,scene->mRootNode, scene, directory,shader, skeleton.get());
+        rootGO->getComponent<Components::Model>()->UpdateMeshChildren();
+        if (shader)
+            rootGO->getComponent<Components::Model>()->SetShader(shader);
+        if (skeleton)
+            rootGO->addComponent<Components::Animator>();
+        return rootGO;
     }
 
-    void ModelLoader::processNode(Engine::GameObject* parent,const aiNode* node, const aiScene* scene, const std::string& directory) {
-        Engine::GameObject* rootGO = Engine::ObjectManager::CreateObject<Engine::GameObject>(parent);
+    void ModelLoader::processNode(Engine::GameObject* parent,const aiNode* node, const aiScene* scene, const std::string& directory,Shader* shader, Skeleton* skeleton) {
         for (unsigned int i = 0; i < node->mNumMeshes; i++) {
             aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-            processMesh(rootGO, mesh, scene, directory);
+            processMesh(parent, mesh, scene, directory,shader,skeleton);
         }
 
         for (unsigned int i = 0; i < node->mNumChildren; i++) {
-            processNode(rootGO, node->mChildren[i], scene, directory);
+            processNode(parent, node->mChildren[i], scene, directory,shader, skeleton);
         }
     }
 
-    void ModelLoader::processMesh(Engine::GameObject* parent, aiMesh *mesh, const aiScene *scene, const std::string &directory) {
+    void ModelLoader::processMesh(Engine::GameObject* parent, aiMesh *mesh, const aiScene *scene, const std::string &directory,Shader* shader,Skeleton* skeleton) {
         std::vector<Engine::Vertex> vertices;
         std::vector<unsigned int> indices;
         std::vector<Texture> textures;
@@ -46,34 +76,15 @@ namespace Asset {
         for(unsigned int i = 0; i < mesh->mNumVertices; i++)
         {
             Engine::Vertex vertex;
-            glm::vec3 vector; // positions
-            vector.x = mesh->mVertices[i].x;
-            vector.y = mesh->mVertices[i].y;
-            vector.z = mesh->mVertices[i].z;
-            vertex.Position = vector;
-            if (mesh->HasNormals()) // normals
-            {
-                vector.x = mesh->mNormals[i].x;
-                vector.y = mesh->mNormals[i].y;
-                vector.z = mesh->mNormals[i].z;
-                vertex.Normal = vector;
-            }
+            if (skeleton != nullptr) SetVertexBoneDataToDefault(vertex);
+            vertex.Position = glm::vec3(mesh->mVertices[i].x,mesh->mVertices[i].y,mesh->mVertices[i].z);
+            if (mesh->HasNormals())
+                vertex.Normal = glm::vec3(mesh->mNormals[i].x,mesh->mNormals[i].y,mesh->mNormals[i].z);
             if(mesh->mTextureCoords[0]) // texture coordinates
             {
-                glm::vec2 vec;
-                vec.x = mesh->mTextureCoords[0][i].x;
-                vec.y = mesh->mTextureCoords[0][i].y;
-                vertex.TexCoords = vec;
-                // tangent
-                vector.x = mesh->mTangents[i].x;
-                vector.y = mesh->mTangents[i].y;
-                vector.z = mesh->mTangents[i].z;
-                vertex.Tangent = vector;
-                // bitangent
-                vector.x = mesh->mBitangents[i].x;
-                vector.y = mesh->mBitangents[i].y;
-                vector.z = mesh->mBitangents[i].z;
-                vertex.Bitangent = vector;
+                vertex.TexCoords = glm::vec2(mesh->mTextureCoords[0][i].x,mesh->mTextureCoords[0][i].y);
+                if (mesh->mTangents) vertex.Tangent = glm::vec3(mesh->mTangents[i].x,mesh->mTangents[i].y,mesh->mTangents[i].z);
+                if (mesh->mBitangents) vertex.Bitangent = glm::vec3(mesh->mBitangents[i].x,mesh->mBitangents[i].y,mesh->mBitangents[i].z);
             }
             else
                 vertex.TexCoords = glm::vec2(0.0f, 0.0f);
@@ -102,8 +113,48 @@ namespace Asset {
         textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
         textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 
-        Engine::ObjectManager::CreateObject<Prefab::MeshObject>(parent, std::move(vertices), std::move(indices), std::move(textures));
+        if (skeleton != nullptr) ExtractBoneWeightForVertices(vertices,mesh,skeleton);
+
+        Engine::GameObject* meshy;
+        if (skeleton)
+            Engine::ObjectManager::CreateObject<Prefab::MeshObject>(parent, std::move(vertices), std::move(indices), std::move(textures),false,true);
+        else
+            Engine::ObjectManager::CreateObject<Prefab::MeshObject>(parent, std::move(vertices), std::move(indices), std::move(textures));
     }
+
+    void SetVertexBoneData(Engine::Vertex& vertex, int boneID, float weight)
+    {
+        for (int i = 0; i < MAX_BONE_INFLUENCE; ++i)
+        {
+            if (vertex.m_BoneIDs[i] < 0)
+            {
+                vertex.m_Weights[i] = weight;
+                vertex.m_BoneIDs[i] = boneID;
+                break;
+            }
+        }
+    }
+
+    void ModelLoader::ExtractBoneWeightForVertices(std::vector<Engine::Vertex>& vertices, aiMesh* mesh, Skeleton* skeleton)
+    {
+        for (int b = 0; b < mesh->mNumBones; ++b)
+        {
+            aiBone* aiBonePtr = mesh->mBones[b];
+            auto it = skeleton->bones.find(aiBonePtr->mName.C_Str());
+            if (it == skeleton->bones.end()) continue;
+            int boneID = it->second.id;
+            assert(boneID != -1);
+            for (int w = 0; w < aiBonePtr->mNumWeights; ++w)
+            {
+                unsigned int vertexId = aiBonePtr->mWeights[w].mVertexId;
+                float weight = aiBonePtr->mWeights[w].mWeight;
+                assert(vertexId <= vertices.size());
+                SetVertexBoneData(vertices[vertexId], boneID, weight);
+            }
+        }
+    }
+
+
     std::vector<Texture> ModelLoader::loadMaterialTextures(const aiMaterial* mat, const aiTextureType type, const std::string& typeName, const std::string& directory)
     {
         std::vector<Texture> textures;
@@ -128,4 +179,4 @@ namespace Asset {
         }
         return textures;
     };
-} // Engine
+} // Asset

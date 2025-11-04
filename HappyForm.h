@@ -1,13 +1,14 @@
 #pragma once
 #include <GLFW/glfw3.h>
 #include "MeshPlayer.h"
+#include "include/Asset/asset.h"
 #include "include/BaseObject/Mesh.h"
 #include "include/Engine/ObjectManager.h"
 #include "include/Asset/ModelLoader.h"
+#include "include/Components/animator.h"
 #include "include/Components/Collider.h"
 inline Engine::GameObject* CreateModelObject(const std::string& path) {
-    Engine::GameObject* obj = Engine::ObjectManager::CreateObject<Engine::GameObject>();
-    Asset::ModelLoader::LoadModelToGameObject(obj,path);
+    Engine::GameObject* obj =  Asset::ModelLoader::LoadModelGameObject(path);
     return obj;
 }
 
@@ -91,7 +92,7 @@ namespace Components {
         Asset::Shader* shader;
         Transform *transform;
         Mesh* center;
-        Camera* camera;
+        Engine::GameObject* target;
         Engine::GameObject* rotater1;
         Engine::GameObject* rotater2;
         void init() override {
@@ -122,7 +123,7 @@ namespace Components {
                     }
                     break;
                 case 2:
-                    transform->setPosition(transform->getTransform().translation+glm::normalize(camera->Position - transform->getGlobalTransform().translation)*dTime*(2.f+gameTime*0.05f));
+                    transform->setPosition(transform->getTransform().translation+glm::normalize(target->getComponent<Transform>()->getGlobalTransform().translation - transform->getGlobalTransform().translation)*dTime*(2.f+gameTime*0.05f));
                     transform->setRotation(glm::vec3(90,0,time*250));
                     break;
                 default:
@@ -156,6 +157,43 @@ namespace Components {
             }
         }
     };
+    class MixamoBoy : public Component {
+    public:
+        Transform* transform;
+        Animator* animator;
+        Camera* camera;
+        glm::vec3 accel = {0,0,0};
+        glm::vec3 velo = {0,0,0};
+        bool isWalking = false;
+        void init() override {
+            transform = gameObject->getComponent<Transform>();
+            animator = gameObject->getComponent<Animator>();
+            animator->SetSkeleton(Asset::Asset<Asset::Skeleton>::Get("mixamoBoy"));
+            animator->PlayAnimation(Asset::Asset<Asset::Animation>::Get("Neutral").get());
+        }
+        void update(float dTime) override {
+            if (accel[0]<=0)
+                velo[0] = glm::max(velo[0]-dTime,0.f);
+            else
+                velo[0] = glm::min(velo[0]+accel[0]*dTime,5.f);
+            if (accel[2]<=0)
+                velo[2] = glm::max(velo[2]-dTime,0.f);
+            else
+                velo[2] = glm::min(velo[2]+accel[2]*dTime,5.f);
+            accel[0]=0;
+            accel[2]=0;
+            if (!isWalking && (velo[0]!=0 || velo[2]!=0)) {
+                isWalking = true;
+                animator->PlayAnimation(Asset::Asset<Asset::Animation>::Get("Walking").get());
+            }
+            else if (isWalking && (velo[0]==0 && velo[2]==0)) {
+                isWalking = false;
+                animator->PlayAnimation(Asset::Asset<Asset::Animation>::Get("Neutral").get());
+            }
+            transform->setPosition(transform->getGlobalTransform().translation + velo*dTime);
+            camera->UpdateCam(this->gameObject);
+        }
+    };
 }
 inline Engine::GameObject* CreateNote(glm::vec3 pos, glm::vec3 vel) {
     Engine::GameObject* obj = CreateModelObject("resources/objects/note/note.obj");
@@ -166,14 +204,14 @@ inline Engine::GameObject* CreateNote(glm::vec3 pos, glm::vec3 vel) {
     obj->name = "note";
     return obj;
 }
-inline Engine::GameObject* CreateMerlin(Asset::Shader* shader,Camera *camera,float timey) {
+inline Engine::GameObject* CreateMerlin(Asset::Shader* shader,Engine::GameObject* target,float timey) {
     Engine::GameObject* obj = Engine::ObjectManager::CreateObject<Engine::GameObject>();
     obj->addComponent<Components::Mesh>();
     obj->getComponent<Components::Mesh>()->shader = shader;
     obj->addComponent<Components::Merlin>();
     obj->getComponent<Components::Merlin>()->gameTime = timey;
-    obj->getComponent<Components::Merlin>()->camera = camera;
-    obj->getComponent<Components::Transform>()->setTransform(Engine::Transform({glm::vec3((float)(10 - rand()%20),(float)(5 - rand()%10),(float)(10 - rand()%20))+camera->Position,glm::vec3(90,0,0),glm::vec3(1)}));
+    obj->getComponent<Components::Merlin>()->target = target;
+    obj->getComponent<Components::Transform>()->setTransform(Engine::Transform({glm::vec3((float)(10 - rand()%20),(float)(5 - rand()%10),(float)(10 - rand()%20))+target->getComponent<Components::Transform>()->getGlobalTransform().translation,glm::vec3(90,0,0),glm::vec3(1)}));
     obj->addComponent<Components::Collider>(glm::vec3(0),glm::vec3(1));
     obj->name = "merlin";
     return obj;

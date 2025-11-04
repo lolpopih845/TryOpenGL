@@ -31,8 +31,8 @@ namespace Components {
     public:
         Asset::Shader* shader;
         explicit Renderer() : shader(&Asset::DefaultShader()) {}
-        virtual void SetShader(Asset::Shader& shader) {
-            this->shader = &shader;
+        virtual void SetShader(Asset::Shader* shader) {
+            this->shader = shader;
         }
         virtual void render() {}
     private:
