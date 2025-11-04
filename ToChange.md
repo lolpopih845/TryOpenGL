@@ -1,12 +1,8 @@
 # Changes to be made in this thing.
 
-TODO:
-- Component : Bone (Keep bone), Animator, Animation?
-- Implement animation stuff
-- Make character flying
-- Make more attack?
-
 Todo After:
+- Refactor Everything Ahhhhhh
+- FrameBuffer and shadow??
 - ********* MAKE POINTER ERROR PRINT ERROR (SEGMENTATION FAULT)
 - GameObject construct with name
 - Make all class printable.
