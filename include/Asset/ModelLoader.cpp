@@ -42,8 +42,7 @@ namespace Asset {
         }
         std::shared_ptr<Skeleton> skeleton = nullptr;
         if (hasBone) {
-            skeleton = LoadSkeleton(name,path);
-            AssetStorage<Skeleton>::Load(skeleton);
+            AssetStorage<Skeleton>::Load(name,path);
         }
 
         const std::string directory = path.substr(0, path.find_last_of('/'));

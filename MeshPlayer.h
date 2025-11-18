@@ -200,16 +200,16 @@ inline FrickingSkyBox CreateSkyBox(Asset::Shader shader) {
     return {shader,skyboxVAO,t};
 }
 
-inline void UpdateSkyBox(FrickingSkyBox f, const Camera &camera) {
-    glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
-    f.shader.use();
-    f.shader.setMat4("view", glm::mat4(glm::mat3(camera.GetViewMatrix())));
-    // skybox cube
-    glBindVertexArray(f.VAO);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, f.texture.ID);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
-    glBindVertexArray(0);
-    glDepthFunc(GL_LESS); // set depth function back to default
-}
+// inline void UpdateSkyBox(FrickingSkyBox f, const Camera &camera) {
+//     glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
+//     f.shader.use();
+//     f.shader.setMat4("view", glm::mat4(glm::mat3(camera.GetViewMatrix())));
+//     // skybox cube
+//     glBindVertexArray(f.VAO);
+//     glActiveTexture(GL_TEXTURE0);
+//     glBindTexture(GL_TEXTURE_CUBE_MAP, f.texture.ID);
+//     glDrawArrays(GL_TRIANGLES, 0, 36);
+//     glBindVertexArray(0);
+//     glDepthFunc(GL_LESS); // set depth function back to default
+// }
 

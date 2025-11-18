@@ -197,7 +197,7 @@ namespace Components {
     };
 }
 inline Engine::GameObject* CreateNote(glm::vec3 pos, glm::vec3 vel) {
-    Engine::GameObject* obj = CreateModelObject("resources/objects/note/note.obj");
+    Engine::GameObject* obj = CreateModelObject("note", "resources/objects/note/note.obj");
     obj->addComponent<Components::Collider>(glm::vec3(0),glm::vec3(0.25));
     obj->addComponent<Components::Note>();
     obj->getComponent<Components::Transform>()->setTransform({pos,glm::vec3(0,0,0),glm::vec3(1)});

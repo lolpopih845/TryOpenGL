@@ -42,7 +42,7 @@ namespace Engine {
     }
 
     std::ostream& operator<<(std::ostream& os, const GameObject& go) {
-        os << go.name <<": parent: " << go.parent << " tag: " << go.tag << std::endl;
+        os << go.name <<": parent: " << go.parent << " tag: " << "go.tag" << std::endl;
         os << "Children: [";
         for (auto& c : go.children) { os << c->name << ", "; }
         os << "]" << std::endl;

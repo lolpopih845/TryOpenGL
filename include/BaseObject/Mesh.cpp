@@ -5,7 +5,9 @@
 #include "Mesh.h"
 
 namespace Prefab {
-    MeshObject::MeshObject(GameObject* parent,
+    MeshObject::MeshObject(
+        const std::string& name,
+                        GameObject* parent,
                        const std::vector<Engine::Vertex>& vertices,
                        const std::vector<unsigned int>& indices,
                        const std::vector<Asset::Texture>& textures,

@@ -7,6 +7,7 @@
 #include <string>
 #include <unordered_map>
 #include <iostream>
+#include <memory>
 #include <assimp/scene.h>
 #include <glm/gtc/type_ptr.hpp>
 

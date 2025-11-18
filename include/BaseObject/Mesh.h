@@ -7,7 +7,9 @@ namespace Prefab {
 
 class MeshObject:public Engine::GameObject{
 public: // <- make constructor public
-    MeshObject(GameObject* parent = nullptr,
+    MeshObject(
+                const std::string &name,
+                GameObject* parent = nullptr,
                const std::vector<Engine::Vertex>& vertices = {},
                const std::vector<unsigned int>& indices = {},
                const std::vector<Asset::Texture>& textures = {},

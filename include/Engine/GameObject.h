@@ -5,7 +5,6 @@
 #include <vector>
 #include "../Components/component.h"
 #include "../Components/transform.h"
-#include "RenderPriority.h"
 //namespace Components { class Transform; }
 
 namespace Engine {
@@ -14,7 +13,7 @@ namespace Engine {
         bool active = true;
         GameObject* parent = nullptr;
         std::string name;
-        Tag tag;
+        // Tag tag;
         std::vector<GameObject*> children;
         std::vector<std::unique_ptr<Components::Component>> components;
 

@@ -22,7 +22,8 @@ namespace Engine {
             return m;
         }
     };
-    const Transform DEFAULT_TRANSFORM({glm::vec3(0.0f, 0.0f, 0.f), glm::vec3(.0f, 0.0f, 0.0f),glm::vec3(1.0f,1.0f,1.0f)});
+
+    constexpr Transform DEFAULT_TRANSFORM({glm::vec3(0.0f, 0.0f, 0.f), glm::vec3(.0f, 0.0f, 0.0f),glm::vec3(1.0f,1.0f,1.0f)});
     inline std::ostream& operator<<(std::ostream& os, const Transform& t) {
         os << "Translation: [" << t.translation[0] << ", " << t.translation[1] << ", " << t.translation[2] << "] "
         << "Rotation: [" << t.rotation[0] << ", " << t.rotation[1] << ", " << t.rotation[2] << "] "

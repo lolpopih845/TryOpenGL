@@ -6,9 +6,10 @@
 #include <memory>
 #include <iostream>
 namespace Asset {
-    template<typename T, typename... Args>
+    template<typename T>
 class AssetStorage {
 public:
+        template<typename... Args>
     static std::shared_ptr<T> Load(Args&&... args) {
         static_assert(std::is_base_of<AssetObject, T>::value,
                  "T must derive from AssetObject");
@@ -16,7 +17,7 @@ public:
             auto asset = std::make_shared<T>(std::forward<Args>(args)...);
             if (assets().count(asset->name)) {
                 std::cerr << "Asset already exists: " << asset->name << std::endl;
-                return assets()[asset->name];
+                return std::dynamic_pointer_cast<T>(assets()[asset->name]);
             }
             assets()[asset->name] = asset;
             return asset;
