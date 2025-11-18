@@ -9,8 +9,8 @@
 
 #include "../Components/animator.h"
 #include "../BaseObject/Mesh.h"
-#include "AnimLoader.h"
-#include "asset.h"
+#include "../garbage/AnimLoader.h"
+#include "AssetStorage.h"
 #include "../BaseObject/ModelObject.h"
 
 namespace Asset {
@@ -25,7 +25,7 @@ namespace Asset {
         }
     }
 
-    Engine::GameObject* ModelLoader::LoadModelGameObject(const std::string& path,Shader* shader, std::string id) {
+    Engine::GameObject* ModelLoader::LoadModelGameObject(const std::string& name, const std::string& path,Shader* shader,bool hasBone) {
         Assimp::Importer importer;
         const aiScene* scene = importer.ReadFile(path,
         aiProcess_Triangulate |
@@ -41,14 +41,14 @@ namespace Asset {
             return nullptr;
         }
         std::shared_ptr<Skeleton> skeleton = nullptr;
-        if (id!="") {
-            skeleton = LoadSkeleton(path);
-            Asset<Skeleton>::Load(id, skeleton);
+        if (hasBone) {
+            skeleton = LoadSkeleton(name,path);
+            AssetStorage<Skeleton>::Load(skeleton);
         }
 
         const std::string directory = path.substr(0, path.find_last_of('/'));
-        Engine::GameObject* rootGO = Engine::ObjectManager::CreateObject<Prefab::ModelObject>();
-        processNode(rootGO,scene->mRootNode, scene, directory,shader, skeleton.get());
+        Engine::GameObject* rootGO = Engine::ObjectManager::CreateObject<Prefab::ModelObject>(name);
+        processNode(name,rootGO,scene->mRootNode, scene, directory,shader, skeleton.get());
         rootGO->getComponent<Components::Model>()->UpdateMeshChildren();
         if (shader)
             rootGO->getComponent<Components::Model>()->SetShader(shader);
@@ -57,18 +57,18 @@ namespace Asset {
         return rootGO;
     }
 
-    void ModelLoader::processNode(Engine::GameObject* parent,const aiNode* node, const aiScene* scene, const std::string& directory,Shader* shader, Skeleton* skeleton) {
+    void ModelLoader::processNode(const std::string& name, Engine::GameObject* parent,const aiNode* node, const aiScene* scene, const std::string& directory,Shader* shader, Skeleton* skeleton) {
         for (unsigned int i = 0; i < node->mNumMeshes; i++) {
             aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-            processMesh(parent, mesh, scene, directory,shader,skeleton);
+            processMesh(name, parent, mesh, scene, directory,shader,skeleton);
         }
 
         for (unsigned int i = 0; i < node->mNumChildren; i++) {
-            processNode(parent, node->mChildren[i], scene, directory,shader, skeleton);
+            processNode(name, parent, node->mChildren[i], scene, directory,shader, skeleton);
         }
     }
 
-    void ModelLoader::processMesh(Engine::GameObject* parent, aiMesh *mesh, const aiScene *scene, const std::string &directory,Shader* shader,Skeleton* skeleton) {
+    void ModelLoader::processMesh(const std::string& name, Engine::GameObject* parent, aiMesh *mesh, const aiScene *scene, const std::string &directory,Shader* shader,Skeleton* skeleton) {
         std::vector<Engine::Vertex> vertices;
         std::vector<unsigned int> indices;
         std::vector<Texture> textures;
@@ -103,10 +103,10 @@ namespace Asset {
 
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
-        std::vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse",directory);
-        std::vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular",directory);
-        std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal",directory);
-        std::vector<Texture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height",directory);
+        std::vector<Texture> diffuseMaps = loadMaterialTextures(name, material, aiTextureType_DIFFUSE, "texture_diffuse",directory);
+        std::vector<Texture> specularMaps = loadMaterialTextures(name, material, aiTextureType_SPECULAR, "texture_specular",directory);
+        std::vector<Texture> normalMaps = loadMaterialTextures(name, material, aiTextureType_HEIGHT, "texture_normal",directory);
+        std::vector<Texture> heightMaps = loadMaterialTextures(name, material, aiTextureType_AMBIENT, "texture_height",directory);
 
         textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
         textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
@@ -115,11 +115,10 @@ namespace Asset {
 
         if (skeleton != nullptr) ExtractBoneWeightForVertices(vertices,mesh,skeleton);
 
-        Engine::GameObject* meshy;
         if (skeleton)
-            Engine::ObjectManager::CreateObject<Prefab::MeshObject>(parent, std::move(vertices), std::move(indices), std::move(textures),false,true);
+            Engine::ObjectManager::CreateObject<Prefab::MeshObject>("mesh",parent, std::move(vertices), std::move(indices), std::move(textures),false,true);
         else
-            Engine::ObjectManager::CreateObject<Prefab::MeshObject>(parent, std::move(vertices), std::move(indices), std::move(textures));
+            Engine::ObjectManager::CreateObject<Prefab::MeshObject>("mesh",parent, std::move(vertices), std::move(indices), std::move(textures));
     }
 
     void SetVertexBoneData(Engine::Vertex& vertex, int boneID, float weight)
@@ -155,7 +154,7 @@ namespace Asset {
     }
 
 
-    std::vector<Texture> ModelLoader::loadMaterialTextures(const aiMaterial* mat, const aiTextureType type, const std::string& typeName, const std::string& directory)
+    std::vector<Texture> ModelLoader::loadMaterialTextures(const std::string& name, const aiMaterial* mat, const aiTextureType type, const std::string& typeName, const std::string& directory)
     {
         std::vector<Texture> textures;
         for(unsigned int i = 0; i < mat->GetTextureCount(type); i++)
@@ -172,7 +171,7 @@ namespace Asset {
                 }
             }
             if (!skip) {
-                Texture texture((path.c_str()), typeName);
+                Texture texture(name+"_"+typeName,(path.c_str()), typeName);
                 textures.push_back(texture);
                 textures_loaded.push_back(texture);
             }

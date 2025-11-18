@@ -1,14 +1,14 @@
 #pragma once
 #include <GLFW/glfw3.h>
 #include "MeshPlayer.h"
-#include "include/Asset/asset.h"
+#include "include/Asset/AssetStorage.h"
 #include "include/BaseObject/Mesh.h"
 #include "include/Engine/ObjectManager.h"
 #include "include/Asset/ModelLoader.h"
 #include "include/Components/animator.h"
 #include "include/Components/Collider.h"
-inline Engine::GameObject* CreateModelObject(const std::string& path) {
-    Engine::GameObject* obj =  Asset::ModelLoader::LoadModelGameObject(path);
+inline Engine::GameObject* CreateModelObject(const std::string& name, const std::string& path) {
+    Engine::GameObject* obj =  Asset::ModelLoader::LoadModelGameObject(name,path);
     return obj;
 }
 
@@ -28,7 +28,7 @@ namespace Components {
         }
         void init() override {
             for (int i = 0; i < 4; ++i) {
-                prisms[i] = Engine::ObjectManager::CreateObject<Prefab::MeshObject>();
+                prisms[i] = Engine::ObjectManager::CreateObject<Prefab::MeshObject>("Rotater");
                 prisms[i]->getComponent<Mesh>()->shader = &shader;
                 gameObject->addChild(prisms[i]);
             }
@@ -75,7 +75,7 @@ namespace Components {
 }
 
 inline Engine::GameObject* CreateRotater(Asset::Shader& shader, Engine::Transform orbitRing, float delay, float r_speed) {
-    Engine::GameObject* obj = Engine::ObjectManager::CreateObject<Engine::GameObject>();
+    Engine::GameObject* obj = Engine::ObjectManager::CreateObject<Engine::GameObject>("Rotater");
     obj->addComponent<Components::Rotater>(shader, orbitRing, delay, r_speed);
     return obj;
 }
@@ -168,10 +168,11 @@ namespace Components {
         void init() override {
             transform = gameObject->getComponent<Transform>();
             animator = gameObject->getComponent<Animator>();
-            animator->SetSkeleton(Asset::Asset<Asset::Skeleton>::Get("mixamoBoy"));
-            animator->PlayAnimation(Asset::Asset<Asset::Animation>::Get("Neutral").get());
+            animator->SetSkeleton(Asset::AssetStorage<Asset::Skeleton>::Get("mixamoBoy"));
+            animator->PlayAnimation(Asset::AssetStorage<Asset::Animation>::Get("Neutral").get());
         }
         void update(float dTime) override {
+            std::cout << *animator << std::endl;
             if (accel[0]<=0)
                 velo[0] = glm::max(velo[0]-dTime,0.f);
             else
@@ -184,11 +185,11 @@ namespace Components {
             accel[2]=0;
             if (!isWalking && (velo[0]!=0 || velo[2]!=0)) {
                 isWalking = true;
-                animator->PlayAnimation(Asset::Asset<Asset::Animation>::Get("Walking").get());
+                animator->PlayAnimation(Asset::AssetStorage<Asset::Animation>::Get("Walking").get());
             }
             else if (isWalking && (velo[0]==0 && velo[2]==0)) {
                 isWalking = false;
-                animator->PlayAnimation(Asset::Asset<Asset::Animation>::Get("Neutral").get());
+                animator->PlayAnimation(Asset::AssetStorage<Asset::Animation>::Get("Neutral").get());
             }
             transform->setPosition(transform->getGlobalTransform().translation + velo*dTime);
             camera->UpdateCam(this->gameObject);
@@ -205,7 +206,7 @@ inline Engine::GameObject* CreateNote(glm::vec3 pos, glm::vec3 vel) {
     return obj;
 }
 inline Engine::GameObject* CreateMerlin(Asset::Shader* shader,Engine::GameObject* target,float timey) {
-    Engine::GameObject* obj = Engine::ObjectManager::CreateObject<Engine::GameObject>();
+    Engine::GameObject* obj = Engine::ObjectManager::CreateObject<Engine::GameObject>("Merlin");
     obj->addComponent<Components::Mesh>();
     obj->getComponent<Components::Mesh>()->shader = shader;
     obj->addComponent<Components::Merlin>();

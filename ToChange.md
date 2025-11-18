@@ -1,14 +1,12 @@
 # Changes to be made in this thing.
 
 Todo After:
-- Refactor Everything Ahhhhhh
-- FrameBuffer and shadow??
+- Optimize Collider
 - ********* MAKE POINTER ERROR PRINT ERROR (SEGMENTATION FAULT)
-- GameObject construct with name
-- Make all class printable.
-- Dedicate Input system.
-- Make camera a gameObject
-- ShaderManager class
+- Making implementation Easier
 - Better FileSystem
-- Make SkyBox a GameObject (need to override render() or make render() more adaptive)
+
+- Sound
+
+- FrameBuffer and shadow??
 

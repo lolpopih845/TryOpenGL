@@ -11,7 +11,7 @@ namespace Prefab {
                        const std::vector<Asset::Texture>& textures,
                        bool use_tangent,
                        bool use_skinning)
-    : GameObject(parent)
+    : GameObject(*parent)
     {
         addComponent<Components::Mesh>(vertices, indices, textures, use_tangent, use_skinning);
     }

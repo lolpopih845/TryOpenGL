@@ -2,7 +2,7 @@
 
 #include <iostream>
 namespace Engine {
-    GameObject::GameObject(GameObject *parent) {
+    GameObject::GameObject(const std::string& name,GameObject *parent):name(name) {
         if (parent) {
             parent->addChild(this);
         }
@@ -39,5 +39,16 @@ namespace Engine {
 
     bool GameObject::isActive() const {
         return this->active;
+    }
+
+    std::ostream& operator<<(std::ostream& os, const GameObject& go) {
+        os << go.name <<": parent: " << go.parent << " tag: " << go.tag << std::endl;
+        os << "Children: [";
+        for (auto& c : go.children) { os << c->name << ", "; }
+        os << "]" << std::endl;
+        os << "Components: [";
+        for (auto& c : go.components) { os << c->getComponentName() << ", ";}
+        os << "]" << std::endl;
+        return os;
     }
 }

@@ -51,4 +51,14 @@ namespace Components {
         for (const auto& child : gameObject->children)
             child->getComponent<Transform>()->updated = false;
     }
+    const char *Transform::getComponentName() const {
+        return "Transform";
+    }
+
+    std::ostream& operator<<(std::ostream& os, const Transform& t) {
+        os << "Transforms (" << t.gameObject->name << "): \n"
+        << "Local: " << t.local << "\n"
+        << "Global: " << t.global << "\n";
+        return os;
+    }
 }

@@ -7,10 +7,9 @@ namespace Prefab {
 
     class ModelObject:public Engine::GameObject{
     public: // <- make constructor public
-        ModelObject(GameObject* parent = nullptr) {
-            this->parent = parent;
+        explicit ModelObject(const GameObject* parent = nullptr): GameObject(*parent) {
             addComponent<Components::Model>();
-        };
+        }
     };
 
 } // Prefab

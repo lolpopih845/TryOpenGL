@@ -7,7 +7,7 @@ namespace Asset {
     unsigned int ID;
 // constructor generates the shader on the fly
 // ------------------------------------------------------------------------
-Shader::Shader(const char *vertexPath, const char *fragmentPath, const char *geometryPath) {
+Shader::Shader(const std::string& name, const char *vertexPath, const char *fragmentPath, const char *geometryPath) : AssetObject(name,SHADER){
     // 1. retrieve the vertex/fragment source code from filePath
     std::string vertexCode;
     std::string fragmentCode;
@@ -180,7 +180,7 @@ void Shader::checkCompileErrors(const GLuint shader, const std::string &type) {
     }
 }
     Shader& DefaultShader() {
-        static Shader defaultShader("shaders/3Dv.hlsl", "shaders/simple3Df.hlsl");
+        static Shader defaultShader("Default","shaders/3Dv.hlsl", "shaders/simple3Df.hlsl");
         return defaultShader;
     }
 }

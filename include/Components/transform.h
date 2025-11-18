@@ -6,6 +6,7 @@
 #include <glm/gtc/quaternion.hpp>
 
 #include "../Engine/GameObject.h"
+#include "iostream"
 namespace Engine {
     struct Transform {
         glm::vec3 translation;
@@ -21,7 +22,13 @@ namespace Engine {
             return m;
         }
     };
-    constexpr Engine::Transform DEFAULT_TRANSFORM({glm::vec3(0.0f, 0.0f, 0.f), glm::vec3(.0f, 0.0f, 0.0f),glm::vec3(1.0f,1.0f,1.0f)});
+    const Transform DEFAULT_TRANSFORM({glm::vec3(0.0f, 0.0f, 0.f), glm::vec3(.0f, 0.0f, 0.0f),glm::vec3(1.0f,1.0f,1.0f)});
+    inline std::ostream& operator<<(std::ostream& os, const Transform& t) {
+        os << "Translation: [" << t.translation[0] << ", " << t.translation[1] << ", " << t.translation[2] << "] "
+        << "Rotation: [" << t.rotation[0] << ", " << t.rotation[1] << ", " << t.rotation[2] << "] "
+        << "Scale: [" << t.scale[0] << ", " << t.scale[1] << ", " << t.scale[2] << "] ";
+        return os;
+    }
 }
 
 
@@ -38,6 +45,8 @@ namespace Components{
         void setRotation(glm::vec3 t);
         void setScale(glm::vec3 t);
         void update(float dTime) override;
+        const char *getComponentName() const override;
+        friend std::ostream& operator<<(std::ostream& os, const Transform& transform);
     private:
         Engine::Transform local;
         Engine::Transform global;

@@ -57,8 +57,8 @@ namespace Components {
                 number = std::to_string(normalNr++);
             else if(name == "texture_height")
                 number = std::to_string(heightNr++);
-            glUniform1i(glGetUniformLocation(shader->ID, (name + number).c_str()), i);
             textures[i].bind();
+            shader->setInt((name + number).c_str(),i);
         }
         glBindVertexArray(VAO);
         if (gameObject) {
@@ -70,9 +70,12 @@ namespace Components {
         glActiveTexture(GL_TEXTURE0);
     }
 
+    const char * Mesh::getComponentName() const {
+        return "Mesh";
+    }
 
 
-void Mesh::updateMeshes() const {
+    void Mesh::updateMeshes() const {
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Engine::Vertex), vertices.data(), GL_STATIC_DRAW);
@@ -117,4 +120,10 @@ void Mesh::updateMeshes() const {
     }
     glBindVertexArray(0);
 }
+    std::ostream& operator<<(std::ostream& os, const Mesh& mesh) {
+        os << "Mesh (" << mesh.gameObject->name << "): "
+        << "VAO: " << mesh.VAO << ", VBO: " << mesh.VBO << ", EBO: " << mesh.EBO << ", use_tanning: " << mesh.use_tangent << "use_skinning: "<< mesh.use_skinning << std::endl;
+        os << "Vertices: " << mesh.vertices.size() << "Indices: " << mesh.indices.size() << "Texture: " << mesh.textures.size() << std::endl;
+        return os;
+    }
 }

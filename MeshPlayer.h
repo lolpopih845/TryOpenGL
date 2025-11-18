@@ -194,7 +194,7 @@ inline FrickingSkyBox CreateSkyBox(Asset::Shader shader) {
         "resources/sky1.jpg",
         "resources/sky2.jpg",
         "resources/sky2.jpg"};
-    const Asset::Texture t(f);
+    const Asset::Texture t("skybox",f);
     shader.use();
     shader.setInt("skybox", 0);
     return {shader,skyboxVAO,t};

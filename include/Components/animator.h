@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include <map>
 #include <vector>
+#include <iostream>
 
 #include <memory>
 #include "component.h"
@@ -21,7 +22,8 @@ namespace Components {
         }
 
         void SetSkeleton(std::shared_ptr<Asset::Skeleton> skeleton);
-
+        const char *getComponentName() const override;
+        friend std::ostream& operator<<(std::ostream& os, const Animator& animator);
     private:
 
         glm::mat4 UpdateBlend(const Asset::Channel* c1, const Asset::Channel* c2);

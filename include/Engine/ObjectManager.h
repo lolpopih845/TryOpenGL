@@ -18,6 +18,7 @@ namespace Engine {
         }
         static void DestroyObject(GameObject* obj);
         static void UpdateAll(float dTime);
+        static std::vector<std::unique_ptr<GameObject>> GetAllObjects();
     private:
         static inline std::vector<std::unique_ptr<GameObject>> active_objects;
         static inline std::vector<std::unique_ptr<GameObject>> pending_objects;

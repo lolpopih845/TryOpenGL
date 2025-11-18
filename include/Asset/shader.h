@@ -6,14 +6,16 @@
 
 #include <string>
 
+#include "AssetObject.h"
+
 namespace Asset {
-    class Shader
+    class Shader: public AssetObject
     {
     public:
         unsigned int ID;
         // constructor generates the shader on the fly
         // ------------------------------------------------------------------------
-        Shader(const char* vertexPath, const char* fragmentPath, const char* geometryPath = nullptr);
+        Shader(const std::string& name, const char* vertexPath, const char* fragmentPath, const char* geometryPath = nullptr);
         // activate the shader
         // ------------------------------------------------------------------------
         void use() const;

@@ -19,6 +19,7 @@ public:
     void SetShader(Asset::Shader* shader);
     Asset::Shader* GetShader() const;
     void AddMesh(Engine::GameObject* mesh);
+    const char *getComponentName() const override;
 private:
 
     std::vector<Engine::GameObject*> meshes;

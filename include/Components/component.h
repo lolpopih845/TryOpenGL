@@ -11,7 +11,7 @@ namespace Components {
         virtual ~Component() = default;
         virtual void update(float dTime) {}
         virtual void init() {}
-        void setEnabled(bool e) {
+        void setEnabled(const bool e) {
             if (enabled == e) return;
             enabled = e;
             if (enabled) onEnable();
@@ -19,10 +19,19 @@ namespace Components {
         }
         virtual void onEnable() {}
         virtual void onDisable() {}
+
+        //Collider
         virtual void onCollisionEnter(Collider* other) {}
         virtual void onCollisionStay(Collider* other) {}
         virtual void onCollisionExit(Collider* other) {}
+
+        //Trigger
+        virtual void onTriggerEnter(Collider* other) {}
+        virtual void onTriggerStay(Collider* other) {}
+        virtual void onTriggerExit(Collider* other) {}
+
         bool isEnabled() const { return enabled; }
+        virtual const char* getComponentName() const { return "Unnamed_Component"; }
     private:
         bool enabled = true;
     };

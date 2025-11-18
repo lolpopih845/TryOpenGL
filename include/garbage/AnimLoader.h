@@ -7,8 +7,8 @@
 #include <assimp/postprocess.h>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "skeleton.h"
-#include "animation.h"
+#include "../Asset/skeleton.h"
+#include "../Asset/animation.h"
 
 namespace Asset {
     inline void ConvertAiNode(SkeletonNode& node,const aiNode* src ) {
@@ -24,7 +24,7 @@ namespace Asset {
         }
     }
 
-    inline std::shared_ptr<Skeleton> LoadSkeleton(const std::string& filePath)
+    inline std::shared_ptr<Skeleton> LoadSkeleton(const std::string& name, const std::string& filePath)
     {
         Assimp::Importer importer;
         const aiScene* scene = importer.ReadFile(filePath, aiProcess_Triangulate |
@@ -39,7 +39,7 @@ namespace Asset {
             throw std::runtime_error("Failed to load model: " + filePath);
         }
 
-        auto skeleton = std::make_shared<Skeleton>();
+        auto skeleton = std::make_shared<Skeleton>(name);
 
         ConvertAiNode(skeleton->rootNode,scene->mRootNode);
 
@@ -61,7 +61,7 @@ namespace Asset {
         return skeleton;
     }
 
-    inline std::shared_ptr<Animation> LoadAnimation(const std::string& path){
+    inline std::shared_ptr<Animation> LoadAnimation(const std::string& name, const std::string& path){
         Assimp::Importer importer;
         const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate |
     aiProcess_JoinIdenticalVertices |
@@ -73,7 +73,7 @@ namespace Asset {
         if (!scene || !scene->mRootNode || scene->mNumAnimations == 0)
             throw std::runtime_error("Failed to load animation: " + path);
 
-        auto clip = std::make_shared<Animation>();
+        auto clip = std::make_shared<Animation>(name);
         const aiAnimation* animation = scene->mAnimations[0];
 
         clip->duration = static_cast<float>(animation->mDuration);

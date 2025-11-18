@@ -11,7 +11,7 @@ namespace Components {
         glm::vec3 center{0.0f};
         glm::vec3 size{1.0f};
         bool isTrigger = false;
-        Components::Transform* transform = nullptr;
+        Transform* transform = nullptr;
         std::unordered_set<Collider*> currentCollisions;
 
         void init() override;
@@ -28,7 +28,8 @@ namespace Components {
 
         void onEnable() override;
         void onDisable() override;
-
+        const char *getComponentName() const override;
+        friend std::ostream& operator<<(std::ostream& os, const Collider& collider);
     };
 }
 

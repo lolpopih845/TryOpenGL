@@ -22,6 +22,11 @@ namespace Components {
         m_Skeleton = skeleton;
         m_FinalBoneMatrices.resize(skeleton->bones.size(), glm::mat4(1.0f));
     }
+
+    const char * Animator::getComponentName() const {
+        return "Animator";
+    }
+
     void Animator::PlayAnimation(Asset::Animation* anim1, Asset::Animation* anim2, const float time1, const float time2, const float blend)
     {
         m_CurrentAnimation = anim1;
@@ -48,18 +53,24 @@ namespace Components {
         auto transforms = GetFinalBoneMatrices();
         auto model = gameObject->getComponent<Model>();
         auto meshGOs = model->GetMeshes(); // returns vector<GameObject*>
+        try {
+            for (auto* meshGO : meshGOs)
+            {
+                if (!meshGO) continue;
+                auto* meshComp = meshGO->getComponent<Mesh>();
+                if (!meshComp) continue;
+                Asset::Shader* sh = meshComp->shader;
+                if (!sh) continue;
 
-        for (auto* meshGO : meshGOs)
-        {
-            if (!meshGO) continue;
-            auto* meshComp = meshGO->getComponent<Mesh>();
-            if (!meshComp) continue;
-            Asset::Shader* sh = meshComp->shader;
-            if (!sh) continue;
-
-            sh->use();
-            sh->setMat4Array("finalBonesMatrices", transforms.data(), (GLuint)transforms.size());
+                sh->use();
+                sh->setMat4Array("finalBonesMatrices", transforms.data(), (GLuint)transforms.size());
+            }
+        }catch (const std::exception& e) {
+            std::cerr << "[Animator Error] Exception in update: " << e.what() << "\n";
+        } catch (...) {
+            std::cerr << "[Animator Error] Unknown exception in update\n";
         }
+
     }
 
     glm::mat4 Animator::UpdateBlend(const Asset::Channel* c1, const Asset::Channel* c2)
@@ -82,6 +93,10 @@ namespace Components {
     }
 
     void Animator::CalculateBoneTransform(const Asset::SkeletonNode *node, const glm::mat4 &parentTransform) {
+        if (!node) {
+            std::cout << "No node input" << "\n";
+            return;
+        }
         glm::mat4 nodeTransform = node->transform;
 
         // Find channel(s)
@@ -131,6 +146,7 @@ namespace Components {
 
     template <typename T>
     int Animator::FindKeyIndex(const std::vector<T>& keys, float time) {
+        if (keys.empty()) return -1;
         for (int i = 0; i < (int)keys.size() - 1; i++) {
             if (time < keys[i + 1].timeStamp)
                 return i;
@@ -180,5 +196,24 @@ namespace Components {
 
         return glm::mix(c->scales[i].scale, c->scales[j].scale, t);
     }
+    std::ostream& operator<<(std::ostream& os, const Animator& animator) {
+        os << "Animator (" << animator.gameObject->name << "): ";
+        os  << "\n  Skeleton: ";
+        if(animator.m_Skeleton) os << animator.m_Skeleton.get();
+        else os<<"No";
+        os << "\n  Current Animation: ";
+        if (animator.m_CurrentAnimation) os << animator.m_CurrentAnimation;
+        else os<<"No";
+        os << "\n  Second Animation: ";
+        if (animator.m_CurrentAnimation2) os << *animator.m_CurrentAnimation2;
+        else os<<"No";
+        os<< "\n  Current Time: " << animator.m_CurrentTime
+          << ", CurrentTime2: " << animator.m_CurrentTime2
+          << ", Blend: " << animator.m_blendAmount
+          << ", DeltaTime: " << animator.m_DeltaTime
+          << ", FinalBoneMatrices: " << animator.m_FinalBoneMatrices.size();
+        return os;
+    }
 }
+
 

@@ -70,4 +70,19 @@ namespace Components {
         currentCollisions.clear();
     }
 
+    const char * Collider::getComponentName() const {
+        return "Collider";
+    }
+
+    std::ostream& operator<<(std::ostream& os, const Collider& collider) {
+        os << "Collider (" << collider.gameObject->name << "): \n"
+        << "center: [" << collider.center[0] << ", " << collider.center[1] << ", " << collider.center[2] << "\n"
+        << "size: [" << collider.size[0] << ", " << collider.size[1] << ", " << collider.size[2] << "]\n"
+        << "isTrigger: " << collider.isTrigger << "\n"
+        << "currentCollisions: ";
+        for (const auto &c : collider.currentCollisions) os<< c->gameObject->name << ", ";os << std::endl;
+        return os;
+    }
 } // namespace Components
+
+

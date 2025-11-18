@@ -1,6 +1,7 @@
 #include "ObjectManager.h"
 
 #include <iostream>
+#include "CameraMan.h"
 
 namespace Engine {
     void ObjectManager::DestroyObject(GameObject* obj) {
@@ -21,6 +22,10 @@ namespace Engine {
                 obj->update(dTime);
         //Destroy
         CleanupDestroyedObjects();
+    }
+
+    std::vector<std::unique_ptr<GameObject>> ObjectManager::GetAllObjects() {
+        return active_objects;
     }
 
     void ObjectManager::CleanupDestroyedObjects() {

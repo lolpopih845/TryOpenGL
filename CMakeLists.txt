@@ -12,6 +12,10 @@ file(GLOB_RECURSE SOURCE_FILES
         include/**/*.h
         include/*.cpp
         include/*.h
+        HappyCat/*.cpp
+        HappyCat/*.h
+        HappyCat/**/*.cpp
+        HappyCat/**/*.h
         MeshPlayer.h
         HappyForm.h
 )

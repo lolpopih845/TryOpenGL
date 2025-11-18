@@ -44,4 +44,8 @@ namespace Components {
     void Model::AddMesh(Engine::GameObject *mesh) {
         meshes.push_back(mesh);
     }
+
+    const char * Model::getComponentName() const {
+        return "Model";
+    }
 } // Components

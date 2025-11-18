@@ -5,6 +5,7 @@
 #include <vector>
 #include "../Components/component.h"
 #include "../Components/transform.h"
+#include "RenderPriority.h"
 //namespace Components { class Transform; }
 
 namespace Engine {
@@ -13,10 +14,11 @@ namespace Engine {
         bool active = true;
         GameObject* parent = nullptr;
         std::string name;
+        Tag tag;
         std::vector<GameObject*> children;
         std::vector<std::unique_ptr<Components::Component>> components;
 
-        explicit GameObject(GameObject* parent = nullptr);
+        explicit GameObject(const std::string& name,GameObject* parent = nullptr);
 
         void addChild(GameObject* child);
 
@@ -46,6 +48,13 @@ namespace Engine {
             return result;
         }
 
+        std::vector<Components::Component*> getAllComponents() {
+            std::vector<Components::Component*> result;
+            for (auto& c : components)
+                result.push_back(c.get());
+            return result;
+        }
+
         std::vector<GameObject*> getChildren() {
             return children;
         }
@@ -57,6 +66,8 @@ namespace Engine {
         void setActive(bool active);
 
         bool isActive() const;
+
+        friend std::ostream& operator<<(std::ostream& os, const GameObject& go);
     };
 
 }
