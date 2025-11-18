@@ -3,29 +3,31 @@
 #define OBJECTMANAGER_H
 
 #include <vector>
-#include <memory>
+
 #include "GameObject.h"
+#include "renameLater.h"
 
 namespace Engine {
+
+
     class ObjectManager {
     public:
         template <typename T, typename ... Args>
-        static T* CreateObject(Args&& ...args) {
-            auto obj = std::make_unique<T>(std::forward<Args>(args)...);
-            T* ptr = obj.get();
-            pending_objects.push_back(std::move(obj));
-            return ptr;
-        }
-        static void DestroyObject(GameObject* obj);
+        static GameObjectID CreateObject(Args&& ...args);
+        static void DestroyObject(GameObjectID id);
         static void UpdateAll(float dTime);
-        static std::vector<std::unique_ptr<GameObject>> GetAllObjects();
+        static GameObject* Get(GameObjectID id);
+        static void SetParent(GameObjectID child, GameObjectID parent);
+        static void AddChild(GameObjectID parent, GameObjectID child);
+        static void RemoveChild(GameObjectID parent, GameObjectID child);
     private:
-        static inline std::vector<std::unique_ptr<GameObject>> active_objects;
-        static inline std::vector<std::unique_ptr<GameObject>> pending_objects;
-        static inline std::vector<GameObject*> pending_destroy;
+        static inline std::vector<GameObjectSlot> active_objects;
+        static inline std::vector<GameObjectID> pending_objects;
+        static inline std::vector<GameObjectID> pending_destroy;
 
         static void CleanupDestroyedObjects();
     };
+
 
 }
 

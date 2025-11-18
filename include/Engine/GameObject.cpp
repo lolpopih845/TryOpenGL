@@ -2,17 +2,8 @@
 
 #include <iostream>
 namespace Engine {
-    GameObject::GameObject(const std::string& name,GameObject *parent):name(name) {
-        if (parent) {
-            parent->addChild(this);
-        }
+    GameObject::GameObject(const std::string& name, const GameObjectID parent):name(name),parent(parent) {
         addComponent<Components::Transform>();
-    }
-
-    void GameObject::addChild(GameObject* child) {
-        if (!child) return;
-        child->parent = this;
-        children.push_back(std::move(child));
     }
 
     void GameObject::init() const {
@@ -42,9 +33,9 @@ namespace Engine {
     }
 
     std::ostream& operator<<(std::ostream& os, const GameObject& go) {
-        os << go.name <<": parent: " << go.parent << " tag: " << go.tag << std::endl;
+        os << go.name <<": parent: " << go.parent.idx << " tag: " << go.tag << std::endl;
         os << "Children: [";
-        for (auto& c : go.children) { os << c->name << ", "; }
+        for (auto& c : go.children) { os << c.idx << ", "; }
         os << "]" << std::endl;
         os << "Components: [";
         for (auto& c : go.components) { os << c->getComponentName() << ", ";}
