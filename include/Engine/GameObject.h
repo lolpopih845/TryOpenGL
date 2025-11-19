@@ -5,21 +5,25 @@
 #include <vector>
 #include "../Components/component.h"
 #include "../Components/transform.h"
+#include "renameLater.h"
 //namespace Components { class Transform; }
 
+
+
+
 namespace Engine {
+    struct GameObjectID;
     class GameObject {
     public:
         bool active = true;
-        GameObject* parent = nullptr;
+        bool destroyed = false;
         std::string name;
-        // Tag tag;
-        std::vector<GameObject*> children;
+        Tag tag;
+        GameObjectID parent = INVALID_ID;
+        std::vector<GameObjectID> children;
         std::vector<std::unique_ptr<Components::Component>> components;
 
-        explicit GameObject(const std::string& name,GameObject* parent = nullptr);
-
-        void addChild(GameObject* child);
+        explicit GameObject(const std::string& name,GameObjectID parent = INVALID_ID);
 
         template<typename T, typename... Args>
         T* addComponent(Args&&... args) {
@@ -47,14 +51,14 @@ namespace Engine {
             return result;
         }
 
-        std::vector<Components::Component*> getAllComponents() {
+        std::vector<Components::Component*> getAllComponents() const {
             std::vector<Components::Component*> result;
             for (auto& c : components)
                 result.push_back(c.get());
             return result;
         }
 
-        std::vector<GameObject*> getChildren() {
+        std::vector<GameObjectID> getChildren() {
             return children;
         }
 
