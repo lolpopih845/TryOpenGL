@@ -3,7 +3,6 @@
 //
 
 #include "ModelLoader.h"
-#include "../Engine/ObjectManager.h"
 #include <assimp/postprocess.h>
 #include <iostream>
 
@@ -12,6 +11,7 @@
 #include "../garbage/AnimLoader.h"
 #include "AssetStorage.h"
 #include "../BaseObject/ModelObject.h"
+#include "../Engine/EngineUtils.h"
 
 namespace Asset {
     std::vector<Texture> ModelLoader::textures_loaded;
@@ -46,7 +46,7 @@ namespace Asset {
         }
 
         const std::string directory = path.substr(0, path.find_last_of('/'));
-        Engine::GameObject* rootGO = Engine::ObjectManager::CreateObject<Prefab::ModelObject>(name);
+        Engine::GameObject* rootGO = Game::Get(Game::CreateObject<Prefab::ModelObject>(name));
         processNode(name,rootGO,scene->mRootNode, scene, directory,shader, skeleton.get());
         rootGO->getComponent<Components::Model>()->UpdateMeshChildren();
         if (shader)

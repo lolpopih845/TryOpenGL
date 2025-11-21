@@ -6,14 +6,13 @@
 
 namespace Prefab {
     MeshObject::MeshObject(
-        const std::string& name,
-                        GameObject* parent,
+        const std::string& name, Engine::Transform transform, const Engine::GameObjectID parent,
                        const std::vector<Engine::Vertex>& vertices,
                        const std::vector<unsigned int>& indices,
                        const std::vector<Asset::Texture>& textures,
                        bool use_tangent,
                        bool use_skinning)
-    : GameObject(*parent)
+    : GameObject(name,transform, parent)
     {
         addComponent<Components::Mesh>(vertices, indices, textures, use_tangent, use_skinning);
     }

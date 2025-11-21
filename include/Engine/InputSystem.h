@@ -1,6 +1,5 @@
 #ifndef INPUTSYSTEM_H
 #define INPUTSYSTEM_H
-#include <map>
 #include <unordered_map>
 #include "glLib.h"
 #include <glm/detail/type_vec2.hpp>

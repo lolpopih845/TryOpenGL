@@ -51,6 +51,7 @@ namespace Asset {
     };
 
     Shader& DefaultShader();
+    Shader& SkyBoxShader();
 }
 
 #endif

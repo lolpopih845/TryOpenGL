@@ -6,8 +6,8 @@
 namespace Prefab {
 
     class ModelObject:public Engine::GameObject{
-    public: // <- make constructor public
-        explicit ModelObject(const std::string &name, GameObject* parent = nullptr): GameObject(name, parent) {
+    public: 
+        explicit ModelObject(const std::string &name, Engine::Transform transform = Engine::DEFAULT_TRANSFORM, Engine::GameObjectID parent = Engine::INVALID_ID): GameObject(name,transform, parent) {
             addComponent<Components::Model>();
         }
     };

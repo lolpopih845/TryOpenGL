@@ -9,7 +9,6 @@
 #include "texture.h"
 
 #include <string>
-#include <fstream>
 #include <vector>
 #include "../Asset/skeleton.h"
 

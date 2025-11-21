@@ -4,7 +4,6 @@
 
 #include "PhysicsSystem.h"
 #include <algorithm>
-#include <iostream>
 
 #include "../Components/Collider.h"
 

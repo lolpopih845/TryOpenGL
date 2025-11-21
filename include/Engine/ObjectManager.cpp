@@ -1,6 +1,5 @@
 #include "ObjectManager.h"
 #include <memory>
-#include <iostream>
 #include "CameraMan.h"
 
 namespace Engine {
@@ -47,7 +46,7 @@ namespace Engine {
         CleanupDestroyedObjects();
     }
 
-    GameObject * ObjectManager::Get(GameObjectID id) {
+    GameObject * ObjectManager::Get(const GameObjectID id) const {
         if (id.idx >= active_objects.size()) return nullptr;
         auto &slot = active_objects[id.idx];
 
@@ -56,7 +55,7 @@ namespace Engine {
         return slot.obj.get();
     }
 
-    void ObjectManager::SetParent(GameObjectID child, GameObjectID parent) {
+    void ObjectManager::SetParent(const GameObjectID child, const GameObjectID parent) const {
         GameObject* c = Get(child);
         GameObject* p = Get(parent);
         if (!c || !p) return;
@@ -69,7 +68,7 @@ namespace Engine {
         p->children.push_back(child);
     }
 
-    void ObjectManager::AddChild(GameObjectID parent, GameObjectID child) {
+    void ObjectManager::AddChild(const GameObjectID parent, const GameObjectID child) const {
         GameObject* p = Get(parent);
         GameObject* c = Get(child);
         if (!p || !c) return;
@@ -78,7 +77,7 @@ namespace Engine {
         c->parent = parent;
     }
 
-    void ObjectManager::RemoveChild(GameObjectID parent, GameObjectID child) {
+    void ObjectManager::RemoveChild(const GameObjectID parent, const GameObjectID child) const {
         GameObject* p = Get(parent);
         GameObject* c  = Get(child);
 

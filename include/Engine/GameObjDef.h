@@ -5,6 +5,7 @@
 
 namespace Engine {
     class GameObject;
+    class Scene;
 
     enum class RenderPriority : int {
         BACKGROUND = 0,
@@ -40,4 +41,7 @@ namespace Engine {
     inline bool IsIDValid(const GameObjectID id) {
         return id.idx != UINT32_MAX;
     }
+
+
+
 }

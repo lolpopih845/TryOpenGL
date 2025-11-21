@@ -1,9 +1,5 @@
 #include "../Asset/texture.h"
-
-#include <fstream>
-
 #include <iostream>
-#include "../FileSystem.h"
 #include <stb_image.h>
 
 namespace Asset {
@@ -15,10 +11,10 @@ namespace Asset {
     if (flipOnLoad) stbi_set_flip_vertically_on_load(1);
     else stbi_set_flip_vertically_on_load(0);
 
-    unsigned char* data = stbi_load(FileSystem::getPath(path).c_str(), &width, &height, &channels, 0);
+    unsigned char* data = stbi_load(path, &width, &height, &channels, 0);
     if (!data)
     {
-        std::cerr << "Failed to load texture: " << FileSystem::getPath(path).c_str() << "\n";
+        std::cerr << "Failed to load texture: " << path << "\n";
         return false;
     }
 
@@ -60,8 +56,7 @@ bool Texture::loadCubemap(const std::vector<std::string>& faces,const bool flipO
     int width, height, nrChannels;
     for (unsigned int i = 0; i < faces.size(); i++)
     {
-        unsigned char *data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
-        if (data)
+        if (unsigned char *data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0))
         {
             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
             stbi_image_free(data);
@@ -114,4 +109,15 @@ std::ostream& operator<<(std::ostream& os, const Texture& texture) {
        << " channels: " << texture.channels;
     return os;
 }
+    Texture & DefaultSkyBoxTexture() {
+        std::vector<std::string> f = {
+            "resources/sky3.jpg",
+            "resources/sky3.jpg",
+            "resources/sky1.jpg",
+            "resources/sky1.jpg",
+            "resources/sky2.jpg",
+            "resources/sky2.jpg"};
+        static Texture defaultSkyBoxTexture("DefaultSkyBox",f);
+        return defaultSkyBoxTexture;
+    }
 }

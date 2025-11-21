@@ -10,39 +10,41 @@ namespace Asset {
 class AssetStorage {
 public:
         template<typename... Args>
-    static std::shared_ptr<T> Load(Args&&... args) {
-        static_assert(std::is_base_of<AssetObject, T>::value,
+    static T* Load(Args&&... args) {
+        static_assert(std::is_base_of_v<AssetObject, T>,
                  "T must derive from AssetObject");
         try {
-            auto asset = std::make_shared<T>(std::forward<Args>(args)...);
-            if (assets().count(asset->name)) {
+            auto asset = std::make_unique<T>(std::forward<Args>(args)...);
+            auto& map = assets();
+            if (map.count(asset->name)) {
                 std::cerr << "Asset already exists: " << asset->name << std::endl;
-                return std::dynamic_pointer_cast<T>(assets()[asset->name]);
+                return static_cast<T*>(map[asset->name].get());
             }
-            assets()[asset->name] = asset;
-            return asset;
+            T* ptr = asset.get();
+            map[asset->name] = std::move(asset);
+            return ptr;
         }
         catch (const std::exception& e) {
-            std::cerr << "Wrong parameter or Asset Error" << std::endl;
+            std::cerr << e.what() << std::endl;
             return nullptr;
         }
 
 
     }
 
-    static std::shared_ptr<T> Get(const std::string& id) {
+    static T* Get(const std::string& id) {
         auto& map = assets();
-        auto it = map.find(id);
+        const auto it = map.find(id);
         if (it == map.end()) {
             std::cerr << "No such asset" << std::endl;
             return nullptr;
         }
-        return std::dynamic_pointer_cast<T>(it->second);
+        return static_cast<T*>(it->second.get());
     }
 
 private:
-    static std::unordered_map<std::string, std::shared_ptr<AssetObject>>& assets() {
-        static std::unordered_map<std::string, std::shared_ptr<AssetObject>> instance;
+    static std::unordered_map<std::string, std::unique_ptr<AssetObject>>& assets() {
+        static std::unordered_map<std::string, std::unique_ptr<AssetObject>> instance;
         return instance;
     }
 };

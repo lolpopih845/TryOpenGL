@@ -2,8 +2,9 @@
 
 #include <iostream>
 namespace Engine {
-    GameObject::GameObject(const std::string& name, const GameObjectID parent):name(name),parent(parent) {
-        addComponent<Components::Transform>();
+    GameObject::GameObject(const std::string& name, const Transform &transform, const GameObjectID parent):name(name),parent(parent) {
+        addComponent<Components::Transform>()->setTransform(transform);
+
     }
 
     void GameObject::init() const {

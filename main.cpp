@@ -68,7 +68,7 @@ int main() {
     // build and compile our shader program
     // ------------------------------------
     Asset::Shader _3DShader("3Ds","shaders/3Dv.hlsl", "shaders/3Df.hlsl");
-    Asset::Shader skyboxShader("SkyBoxs","shaders/SkyBoxV.hlsl", "shaders/SkyBoxF.hlsl");
+    Asset::Shader skyboxShader("SkyBoxs","shaders/SkyBoxV.glsl", "shaders/SkyBoxF.glsl");
     Asset::Shader boneShader("BoneS","shaders/BoneV.hlsl", "shaders/BoneF.hlsl");
 
     Asset::Texture so_true("sotrue","resources/sotrue.png");

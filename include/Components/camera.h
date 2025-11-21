@@ -1,6 +1,7 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 #include "component.h"
+#include "transform.h"
 
 namespace Components {
 
@@ -16,14 +17,15 @@ public:
     glm::vec2 viewPortOffset = glm::vec2(0.0f);
     glm::vec2 viewPortSize = glm::vec2(1.0f);
     float cameraViewPort[4] = { 0, 0, 800, 600 };
+    Transform* transform;
 
-    explicit Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = -90, float pitch = 0);
-    Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch);
+    explicit Camera(glm::vec2 viewPortOffset  = glm::vec2(0.0f),glm::vec2 viewPortSize = glm::vec2(1.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = -90, float pitch = 0);
 
     glm::mat4 GetViewMatrix() const;
     void SetUpCameraPerspective(float fovY, float aspect, float near, float far);
     void setupShaderCameraBuffer();
     void init() override;
+    void cameraRender(float dtime);
     void update(float dtime) override;
     const char *getComponentName() const override;
     friend std::ostream& operator<<(std::ostream& os, const Camera& camera);

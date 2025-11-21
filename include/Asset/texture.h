@@ -31,7 +31,7 @@ namespace Asset {
         void bind() const;
         friend std::ostream& operator<<(std::ostream& os, const Texture& texture);
     };
-
+    Texture& DefaultSkyBoxTexture();
 }
 
 
