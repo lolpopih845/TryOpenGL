@@ -8,7 +8,7 @@
 
 namespace Asset {
 
-    Animation::Animation(const std::string &name, const std::string &path) : AssetObject(name,ANIMATION){
+    Animation::Animation(const std::string &name, const std::string &path) : AssetObject(name,path,ANIMATION){
         LoadAnimation(path);
     }
 
@@ -18,7 +18,6 @@ namespace Asset {
     aiProcess_JoinIdenticalVertices |
     aiProcess_GenSmoothNormals |
     aiProcess_LimitBoneWeights |
-    aiProcess_GlobalScale |
     aiProcess_OptimizeMeshes |
     aiProcess_OptimizeGraph);
         if (!scene || !scene->mRootNode || scene->mNumAnimations == 0)

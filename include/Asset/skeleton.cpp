@@ -3,7 +3,7 @@
 #include <assimp/Importer.hpp>
 
 namespace Asset {
-    Skeleton::Skeleton(const std::string &name, const std::string& path) :AssetObject(name,SKELETON){
+    Skeleton::Skeleton(const std::string &name, const std::string& path) :AssetObject(name,path,SKELETON){
         LoadSkeleton(path);
     }
 
@@ -26,7 +26,6 @@ namespace Asset {
     aiProcess_JoinIdenticalVertices |
     aiProcess_GenSmoothNormals |
     aiProcess_LimitBoneWeights |
-    aiProcess_GlobalScale |
     aiProcess_OptimizeMeshes |
     aiProcess_OptimizeGraph);
 

@@ -14,7 +14,6 @@ namespace Asset {
 
     public:
         unsigned int ID;
-        const char *path;
         std::string type;
         Texture(const std::string &name,const std::vector<std::string>& faces,bool flipOnLoad = true,
                           GLint wrapS = GL_CLAMP_TO_EDGE, GLint wrapT = GL_CLAMP_TO_EDGE, GLint wrapR = GL_CLAMP_TO_EDGE,

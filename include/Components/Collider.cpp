@@ -4,7 +4,6 @@
 
 #include "Collider.h"
 
-#include <iostream>
 #include <ostream>
 
 #include "../Engine/PhysicsSystem.h"
@@ -12,7 +11,7 @@
 namespace Components {
     void Collider::init() {
         transform = gameObject->getComponent<Transform>();
-        Engine::PhysicsSystem::RegisterCollider(this);
+        Engine::PhysicsSystem::RegisterPhysics(gameObject->id);
     }
 
     Collider::Collider(glm::vec3 center, glm::vec3 size) {
@@ -23,7 +22,6 @@ namespace Components {
     Collider::~Collider() {
         for (auto* other : currentCollisions)
             other->currentCollisions.erase(this);
-        Engine::PhysicsSystem::UnregisterCollider(this);
     }
 
     bool Collider::intersects(const Collider &other) const {
@@ -61,12 +59,7 @@ namespace Components {
             currentCollisions.erase(c);
     }
 
-    void Collider::onEnable() {
-        Engine::PhysicsSystem::RegisterCollider(this);
-    }
-
     void Collider::onDisable() {
-        Engine::PhysicsSystem::UnregisterCollider(this);
         currentCollisions.clear();
     }
 

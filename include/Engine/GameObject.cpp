@@ -1,8 +1,8 @@
 #include "GameObject.h"
-
+#include "../Components/transform.h"
 #include <iostream>
 namespace Engine {
-    GameObject::GameObject(const std::string& name, const Transform &transform, const GameObjectID parent):name(name),parent(parent) {
+    GameObject::GameObject(const GameObjectID id, const std::string& name, const Transform &transform, const GameObjectID parent):id(id),name(name),parent(parent) {
         addComponent<Components::Transform>()->setTransform(transform);
 
     }

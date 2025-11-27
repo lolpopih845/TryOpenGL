@@ -1,9 +1,7 @@
 #ifndef ANIMATOR_H
 #define ANIMATOR_H
 #include <glm/glm.hpp>
-#include <map>
 #include <vector>
-#include <iostream>
 
 #include <memory>
 #include "component.h"

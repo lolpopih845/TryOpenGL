@@ -6,7 +6,7 @@
 #include "transform.h"
 
 namespace Components {
-    class Collider : public Renderer {
+    class Collider : public Component {
     public:
         glm::vec3 center{0.0f};
         glm::vec3 size{1.0f};
@@ -26,8 +26,8 @@ namespace Components {
 
         void checkEndedCollisions();
 
-        void onEnable() override;
         void onDisable() override;
+
         const char *getComponentName() const override;
         friend std::ostream& operator<<(std::ostream& os, const Collider& collider);
     };

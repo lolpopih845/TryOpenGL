@@ -33,7 +33,7 @@ namespace Asset {
         SkeletonNode rootNode;
         friend std::ostream& operator<<(std::ostream& os, const Skeleton& skeleton);
 
-        Skeleton(const std::string &name, const std::string& path);
+        inline Skeleton(const std::string &name, const std::string& path);
 
         BoneInfo* FindBone(const std::string& name) {
             try {

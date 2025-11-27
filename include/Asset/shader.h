@@ -52,6 +52,7 @@ namespace Asset {
 
     Shader& DefaultShader();
     Shader& SkyBoxShader();
+    Shader& TextShader();
 }
 
 #endif

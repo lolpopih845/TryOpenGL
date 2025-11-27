@@ -32,7 +32,6 @@ namespace Asset {
                 aiProcess_JoinIdenticalVertices |
                 aiProcess_GenSmoothNormals |
                 aiProcess_LimitBoneWeights |
-                aiProcess_GlobalScale |
                 aiProcess_OptimizeMeshes |
                 aiProcess_OptimizeGraph);
 

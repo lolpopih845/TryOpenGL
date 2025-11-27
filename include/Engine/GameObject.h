@@ -4,26 +4,24 @@
 #include <memory>
 #include <vector>
 #include "../Components/component.h"
-#include "../Components/transform.h"
 #include "GameObjDef.h"
-//namespace Components { class Transform; }
-
-
-
+namespace Components { class Transform; }
 
 namespace Engine {
+
     struct GameObjectID;
     class GameObject {
     public:
         bool active = true;
         bool destroyed = false;
+        GameObjectID id;
         std::string name;
         Tag tag;
         GameObjectID parent = INVALID_ID;
         std::vector<GameObjectID> children;
         std::vector<std::unique_ptr<Components::Component>> components;
 
-        explicit GameObject(const std::string& name, const Transform &transform = DEFAULT_TRANSFORM,GameObjectID parent = INVALID_ID);
+        explicit GameObject(const GameObjectID id, const std::string& name, const Transform &transform = DEFAULT_TRANSFORM,GameObjectID parent = INVALID_ID);
 
         template<typename T, typename... Args>
         T* addComponent(Args&&... args) {

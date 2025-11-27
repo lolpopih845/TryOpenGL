@@ -11,8 +11,9 @@
 
 namespace Components {
 
-    Camera::Camera(glm::vec2 viewPortOffset, const glm::vec2 viewPortSize, glm::vec3 up, float yaw, float pitch) : Front(
-        glm::vec3(0.0f, 0.0f, -1.0f)), transform(nullptr) {
+    Camera::Camera(glm::vec2 viewPortOffset, const glm::vec2 viewPortSize, glm::vec3 up, float yaw, float pitch) : Position(),
+        Front(
+            glm::vec3(0.0f, 0.0f, -1.0f)), Up(up), Right(glm::vec3(0)), transform(nullptr) {
         this->viewPortOffset = viewPortOffset;
         this->viewPortSize = viewPortSize;
         WorldUp = up;

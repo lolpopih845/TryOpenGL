@@ -22,6 +22,7 @@ namespace Engine {
         void RemoveChild(GameObjectID parent, GameObjectID child) const;
     private:
         std::vector<GameObjectSlot> active_objects;
+        std::vector<uint32_t> freeSpaceList;
         std::vector<GameObjectID> pending_objects;
         std::vector<GameObjectID> pending_destroy;
 

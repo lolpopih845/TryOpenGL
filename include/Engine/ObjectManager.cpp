@@ -6,18 +6,17 @@ namespace Engine {
     template<typename T, typename ... Args>
     GameObjectID ObjectManager::CreateObject(Args &&...args) {
         {
-            for (uint32_t i = 0; i < active_objects.size(); i++) {
-                if (!active_objects[i].obj) {
-                    active_objects[i].obj = std::make_unique<T>(std::forward<Args>(args)...);
-                    const GameObjectID id{ i, active_objects[i].gen };
-                    pending_objects.push_back(id);
-                    return id;
-                }
+            uint32_t idx;
+            if (!freeSpaceList.empty()) {
+                idx = freeSpaceList.back();
+                freeSpaceList.pop_back();
             }
-            active_objects.push_back({});
-            const uint32_t idx = active_objects.size() - 1;
-            active_objects[idx].obj = std::make_unique<T>(std::forward<Args>(args)...);
+            else {
+                idx = active_objects.size();
+                active_objects.push_back({});
+            }
             const GameObjectID id{ idx, active_objects[idx].gen };
+            active_objects[idx].obj = std::make_unique<T>(id,std::forward<Args>(args)...);
             pending_objects.push_back(id);
             return id;
         }
@@ -40,7 +39,7 @@ namespace Engine {
         pending_objects.clear();
         //Update
         for (const auto& [obj,gen] : active_objects)
-            if (obj->isActive())
+            if (obj->isActive()&&!obj->destroyed)
                 obj->update(dTime);
         //Destroy
         CleanupDestroyedObjects();
@@ -109,6 +108,7 @@ namespace Engine {
                 }
                 active_objects[id.idx].obj.reset();
                 active_objects[id.idx].gen++;
+                freeSpaceList.push_back(id.idx);
             }
             ++i;
         }

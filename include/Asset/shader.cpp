@@ -7,7 +7,7 @@ namespace Asset {
     unsigned int ID;
 // constructor generates the shader on the fly
 // ------------------------------------------------------------------------
-Shader::Shader(const std::string& name, const char *vertexPath, const char *fragmentPath, const char *geometryPath) : AssetObject(name,SHADER){
+Shader::Shader(const std::string& name, const char *vertexPath, const char *fragmentPath, const char *geometryPath) : AssetObject(name,std::vector<std::string>{vertexPath, fragmentPath},SHADER){
     // 1. retrieve the vertex/fragment source code from filePath
     std::string vertexCode;
     std::string fragmentCode;

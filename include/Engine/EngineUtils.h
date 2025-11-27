@@ -1,8 +1,16 @@
 #ifndef ENGINEUTILS_H
 #define ENGINEUTILS_H
 #include "Scene.h"
+#include "../Asset/AssetStorage.h"
 
 namespace Game {
+    struct Asset {
+        template <typename T, typename... Args>
+        T* Load(Args&&... args) { return Asset::Load<T>(std::forward<Args>(args)...); }
+        template <typename T>
+        T* Get(const std::string& id) { return Asset::Get<T>(id); }
+    };
+
     inline auto& OBJ = Engine::Scene::GetCurrentScene()->objects;
 
     inline auto& Get = OBJ.Get;

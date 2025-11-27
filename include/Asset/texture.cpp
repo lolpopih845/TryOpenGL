@@ -81,7 +81,7 @@ void Texture::bind() const {
     glBindTexture(GL_TEXTURE_2D, ID);
 }
 
-Texture::Texture(const std::string &name,const char *path, const std::string &type, const bool flip, const GLint wrapS, const GLint wrapT, const GLint minFilter, const GLint magFilter) : AssetObject(name,TEXTURE){
+Texture::Texture(const std::string &name,const char *path, const std::string &type, const bool flip, const GLint wrapS, const GLint wrapT, const GLint minFilter, const GLint magFilter) : AssetObject(name,path,TEXTURE){
     this->path = path;
     this->type = type;
     loadFromFile(path, flip, wrapS, wrapT, minFilter, magFilter);
@@ -89,7 +89,7 @@ Texture::Texture(const std::string &name,const char *path, const std::string &ty
 
 Texture::Texture(const std::string &name,const std::vector<std::string>& faces,bool flipOnLoad,
                       GLint wrapS, GLint wrapT, GLint wrapR,
-                      GLint minFilter, GLint magFilter) : AssetObject(name,TEXTURE) {
+                      GLint minFilter, GLint magFilter) : AssetObject(name,faces,TEXTURE) {
     this->path = faces[0].c_str();
     this->type = type;
     loadCubemap(faces, flipOnLoad, wrapS, wrapT, wrapR, minFilter, magFilter);

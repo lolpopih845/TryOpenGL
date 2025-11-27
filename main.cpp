@@ -3,29 +3,21 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
-#include "include/Asset/shader.h"
-#include "include/Asset/texture.h"
 #include "HappyForm.h"
+#include "include/Asset/AssetStorage.h"
+#include "include/Engine/CameraMan.h"
+#include "HappyCat/happycat.h"
 #include "include/Engine/PhysicsSystem.h"
 #include "include/Engine/InputSystem.h"
 
 #include <iostream>
 
-#include "include/garbage/AnimLoader.h"
-#include "include/Asset/AssetStorage.h"
-#include "include/Engine/CameraMan.h"
-#include "HappyCat/happycat.h"
+
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-// timing
-float deltaTime = 0.0f;
-float lastFrame = 0.0f;
 
-// lighting
-glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
 int main() {
     // glfw: initialize and configure
     // ------------------------------
@@ -39,6 +31,7 @@ int main() {
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
+    //
     //Setting Up Cam
     Engine::CameraMan::mainViewport.width = 800;
     Engine::CameraMan::mainViewport.height = 600;
