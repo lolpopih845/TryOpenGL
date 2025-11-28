@@ -132,16 +132,16 @@ namespace Asset {
         }
     }
 
-    void ModelLoader::ExtractBoneWeightForVertices(std::vector<Engine::Vertex>& vertices, aiMesh* mesh, Skeleton* skeleton)
+    void ModelLoader::ExtractBoneWeightForVertices(std::vector<Engine::Vertex>& vertices, const aiMesh* mesh, Skeleton* skeleton)
     {
-        for (int b = 0; b < mesh->mNumBones; ++b)
+        for (unsigned int b = 0; b < mesh->mNumBones; ++b)
         {
             aiBone* aiBonePtr = mesh->mBones[b];
             auto it = skeleton->bones.find(aiBonePtr->mName.C_Str());
             if (it == skeleton->bones.end()) continue;
             int boneID = it->second.id;
             assert(boneID != -1);
-            for (int w = 0; w < aiBonePtr->mNumWeights; ++w)
+            for (unsigned int w = 0; w < aiBonePtr->mNumWeights; ++w)
             {
                 unsigned int vertexId = aiBonePtr->mWeights[w].mVertexId;
                 float weight = aiBonePtr->mWeights[w].mWeight;

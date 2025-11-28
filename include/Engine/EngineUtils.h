@@ -13,7 +13,7 @@ namespace Game {
 
     inline auto& OBJ = Engine::Scene::GetCurrentScene()->objects;
 
-    inline auto& Get = OBJ.Get;
+    inline auto Get = [](Engine::GameObjectID id){ return OBJ.Get(id); };
 
     template <typename T, typename... Args>
     Engine::GameObjectID CreateObject(Args&&... args) {
