@@ -3,7 +3,9 @@
 
 #include <vector>
 #include <glm/detail/func_trigonometric.inl>
-#include <glm/detail/type_vec.hpp>
+
+#include "glm/vec4.hpp"
+#include <irrKlang/irrKlang.h>
 
 
 namespace Engine {
@@ -29,16 +31,19 @@ public:
     Scene* scene;
     void Init();
     void UpdateUBO();
+    explicit StageDirector(const SceneData &data);
     SceneData& GetSceneData() { return data; }
     int AddSpotlight(const Spotlight &spotlight);
     Spotlight* GetSpotlight(const int idx) { return &spotlights[idx]; }
     void RemoveSpotlight(const int idx) { spotlights.erase(spotlights.begin() + idx); }
+    irrklang::ISoundEngine* GetSoundEngine() const;
 
 private:
     unsigned int stageUBO = 0;
     unsigned int spotlightUBO = 0;
     std::vector<Spotlight> spotlights;
     SceneData data;
+    irrklang::ISoundEngine* engine;
 };
 
 } // Engine

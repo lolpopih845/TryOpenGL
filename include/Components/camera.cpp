@@ -71,6 +71,11 @@ void Camera::setupShaderCameraBuffer() {
         glm::vec4 camPos(Position,1.0f);
         glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4)*2, sizeof(glm::vec4), glm::value_ptr(camPos));
 
+        //Set Listener
+        const irrklang::vec3df s_pos = {Position.x,Position.y,Position.z};
+        const irrklang::vec3df s_look = {Front.x,Front.y,Front.z};
+        Game::GetSoundEngine()->setListenerPosition(s_pos, s_look,{0,0,0},{0,1,0});
+
         //Render Skybox
         Game::CAM.GetSkybox()->render(this);
 

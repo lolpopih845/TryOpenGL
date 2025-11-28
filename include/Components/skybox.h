@@ -1,13 +1,10 @@
 #ifndef SKYBOX_H
 #define SKYBOX_H
 
-#include <glm/glm.hpp>
-#include "../Asset/shader.h"
 #include "../Asset/texture.h"
 #include <vector>
 #include "component.h"
 #include "transform.h"
-#include "iostream"
 
 namespace Components {
 

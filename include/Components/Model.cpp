@@ -2,14 +2,15 @@
 // Created by User1 on 4/11/2025.
 //
 
+#include "../Engine/EngineUtils.h"
 #include "Model.h"
 
 namespace Components {
     void Model::UpdateMeshChildren() {
-        std::vector<Engine::GameObject*> children = gameObject->getChildren();
+        const std::vector<Engine::GameObjectID> children = gameObject->getChildren();
         meshes.clear();
-        for (Engine::GameObject* child : children) {
-            if (child->getComponent<Mesh>()) {
+        for (const Engine::GameObjectID id: children) {
+            if (Engine::GameObject* child = Game::Get(id); child->getComponent<Mesh>()) {
                 meshes.push_back(child);
             }
         }

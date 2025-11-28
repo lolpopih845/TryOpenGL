@@ -47,19 +47,45 @@ namespace Game {
         CAM.RemoveCamera(cam);
     };
 
+    inline auto GetCurrentCamera = [] {
+        return Get(CAM.GetCurrentCamera());
+    };
+
+
     inline auto GetCamera = [](const int cam = 0) {
-        return CAM.GetCamera(cam);
+        return Get(CAM.GetCamera(cam));
     };
 
     inline auto GetCameraByName = [](const std::string &name) {
-        return CAM.GetCamera(name);
+        return Get(CAM.GetCamera(name));
     };
 
     inline auto AdjustCameraViewPort = [](GLFWwindow* window, int width, int height) {
         CAM.AdjustCameraViewPort(window, width, height);
     };
 
-    inline auto& SCENE_DIRECTOR = Engine::Scene::GetCurrentScene()->lighting;
+    inline auto& STAGE = Engine::Scene::GetCurrentScene()->lighting;
+
+    inline auto GetSceneData = [] {
+        return STAGE.GetSceneData();
+    };
+
+    inline auto AddSpotlight = [](const Engine::Spotlight &spotlight) {
+        return STAGE.AddSpotlight(spotlight);
+    };
+
+    inline auto GetSpotlight = [](const int idx) {
+        return STAGE.GetSpotlight(idx);
+    };
+
+    inline auto RemoveSpotlight = [](const int idx) {
+        return STAGE.RemoveSpotlight(idx);
+    };
+
+    inline auto GetSoundEngine = [] {
+        return STAGE.GetSoundEngine();
+    };
+
 }
 
 

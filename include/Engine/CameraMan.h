@@ -32,6 +32,7 @@ public:
                           float yaw = -90,
                           float pitch = 0);
     void RemoveCamera(int cam);
+    GameObjectID GetCurrentCamera() const;
     GameObjectID GetCamera(int cam = 0) const;
 
     GameObjectID GetCamera(const std::string &name) const;
@@ -41,6 +42,7 @@ public:
 private:
     std::vector<GameObjectID> cameras;
     SkyBox skybox;
+    unsigned int curr_cam = 0;
 };
 
 } // Engine

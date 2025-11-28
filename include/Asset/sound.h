@@ -6,11 +6,10 @@
 namespace Asset {
     class Sound : public AssetObject {
     public:
-        Sound(const std::string& name, const std::string& path);
-        void Play();
-        void Stop();
-    private:
-        irrklang::ISoundEngine *soundEngine;
+        irrklang::ISoundSource* sound;
+        Sound(const std::string& name, const std::string& path,float volume  = 1);
+        ~Sound() override;
+        void setVolume(float volume) const;
     };
 }
 

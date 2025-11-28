@@ -2,7 +2,7 @@
 #define TEXT_H
 #include <map>
 
-#include "component.h"
+#include "../Components/component.h"
 
 namespace Components {
     struct Character {

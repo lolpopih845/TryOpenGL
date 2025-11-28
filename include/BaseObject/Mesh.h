@@ -6,9 +6,9 @@
 namespace Prefab {
 
 class MeshObject:public Engine::GameObject{
-public: 
-    MeshObject(
-                const std::string &name, Engine::Transform transform = Engine::DEFAULT_TRANSFORM, Engine::GameObjectID parent = Engine::INVALID_ID,
+public:
+    explicit MeshObject(
+               Engine::GameObjectID id, const std::string &name, Engine::Transform transform = Engine::DEFAULT_TRANSFORM, Engine::GameObjectID parent = Engine::INVALID_ID,
                const std::vector<Engine::Vertex>& vertices = {},
                const std::vector<unsigned int>& indices = {},
                const std::vector<Asset::Texture>& textures = {},

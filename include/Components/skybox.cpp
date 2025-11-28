@@ -4,6 +4,8 @@
 
 #include "skybox.h"
 
+#include "../Engine/EngineUtils.h"
+
 namespace Components {
     Skybox::Skybox(const Asset::Texture &texture): texture(texture), VAO(0), VBO(0) {
         skyboxVertices = {
@@ -71,7 +73,7 @@ namespace Components {
         shader->use();
         shader->setInt("skybox", 0);
         glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
-        shader->setMat4("view", glm::mat4(glm::mat3(camera.GetViewMatrix())));
+        shader->setMat4("view", glm::mat4(glm::mat3(Game::GetCurrentCamera()->getComponent<Camera>()->GetViewMatrix())));
         // skybox cube
         glBindVertexArray(VAO);
         glActiveTexture(GL_TEXTURE0);

@@ -13,6 +13,10 @@ namespace Engine {
         cameras.erase(cameras.begin() + cam);
     }
 
+    GameObjectID CameraMan::GetCurrentCamera() const {
+        return cameras[curr_cam];
+    }
+
     GameObjectID CameraMan::GetCamera(const int cam) const {
         return cameras[cam];
     }

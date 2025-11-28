@@ -11,16 +11,17 @@ class Scene {
     ObjectManager objects;
     CameraMan cameras;
     StageDirector lighting;
-    Scene() {
+
+    explicit Scene(SceneData data): lighting(StageDirector(data)) {
         objects = ObjectManager();
         cameras = CameraMan();
-        lighting = StageDirector();
         objects.scene = this;
         cameras.scene = this;
         lighting.scene = this;
         lighting.Init();
         cameras.CreateCamera("MainCamera");
     }
+
     void Activate() {
         currentScene = this;
     }

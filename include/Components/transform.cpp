@@ -1,4 +1,5 @@
 #include "transform.h"
+#include "../Engine/EngineUtils.h"
 
 namespace Components {
     Transform::Transform(Engine::Transform local) : updated(false), local(local), global(Engine::DEFAULT_TRANSFORM) {}
@@ -11,7 +12,7 @@ namespace Components {
         return global;
     }
 
-    void Transform::setTransform(Engine::Transform local) {
+    void Transform::setTransform(const Engine::Transform &local) {
         this->local = local;
         updated = false;
     }
@@ -35,8 +36,8 @@ namespace Components {
         if (updated) return;
         const Transform* parentTransform = nullptr;
 
-        if (gameObject->parent)
-            parentTransform = gameObject->parent->getComponent<Transform>();
+        if (const auto obj = Game::Get(gameObject->parent))
+            parentTransform = obj->getComponent<Transform>();
 
         if (parentTransform) {
             global.scale = parentTransform->global.scale * local.scale;
@@ -49,7 +50,8 @@ namespace Components {
         updated = true;
 
         for (const auto& child : gameObject->children)
-            child->getComponent<Transform>()->updated = false;
+            if (auto obj = Game::Get(child))
+                obj->getComponent<Transform>()->updated = false;
     }
     const char *Transform::getComponentName() const {
         return "Transform";

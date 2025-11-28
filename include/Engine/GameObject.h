@@ -21,7 +21,7 @@ namespace Engine {
         std::vector<GameObjectID> children;
         std::vector<std::unique_ptr<Components::Component>> components;
 
-        explicit GameObject(const GameObjectID id, const std::string& name, const Transform &transform = DEFAULT_TRANSFORM,GameObjectID parent = INVALID_ID);
+        explicit GameObject(GameObjectID id, const std::string& name, const Transform &transform = DEFAULT_TRANSFORM,GameObjectID parent = INVALID_ID);
 
         template<typename T, typename... Args>
         T* addComponent(Args&&... args) {

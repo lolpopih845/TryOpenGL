@@ -5,10 +5,6 @@
 
 
 #include "../Engine/GameObject.h"
-#include "iostream"
-
-
-
 namespace Components{
     class Transform : public Component {
     public:
@@ -17,7 +13,7 @@ namespace Components{
         explicit Transform(Engine::Transform local = Engine::DEFAULT_TRANSFORM);
         Engine::Transform getTransform() const;
         Engine::Transform getGlobalTransform() const;
-        void setTransform(Engine::Transform local);
+        void setTransform(const Engine::Transform &local);
         void setPosition(glm::vec3 t);
         void setRotation(glm::vec3 t);
         void setScale(glm::vec3 t);

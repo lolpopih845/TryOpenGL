@@ -3,7 +3,6 @@
 
 #include <string>
 #include <filesystem>
-#include <cstdlib> // for getenv
 namespace Engine {
     class FileSystem {
     private:

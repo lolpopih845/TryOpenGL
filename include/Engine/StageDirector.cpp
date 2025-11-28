@@ -42,9 +42,16 @@ namespace Engine {
         glBindBuffer(GL_UNIFORM_BUFFER, 0);
     }
 
+    StageDirector::StageDirector(const SceneData &data) : scene(nullptr), data(data) {
+        engine = irrklang::createIrrKlangDevice();
+    }
+
     int StageDirector::AddSpotlight(const Spotlight &spotlight) {
         spotlights.push_back(spotlight);
         return spotlights.size() - 1;
     }
 
+    irrklang::ISoundEngine * StageDirector::GetSoundEngine() const {
+        return engine;
+    }
 } // Engine
