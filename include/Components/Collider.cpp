@@ -9,6 +9,7 @@
 #include "../Engine/PhysicsSystem.h"
 
 namespace Components {
+
     void Collider::init() {
         transform = gameObject->getComponent<Transform>();
         Engine::PhysicsSystem::RegisterPhysics(gameObject->id);

@@ -6,6 +6,7 @@
 #include "transform.h"
 
 namespace Components {
+
     class Collider : public Component {
     public:
         glm::vec3 center{0.0f};
