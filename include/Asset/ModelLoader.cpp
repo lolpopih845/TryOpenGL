@@ -8,10 +8,9 @@
 
 #include "../Components/animator.h"
 #include "../BaseObject/Mesh.h"
-#include "../garbage/AnimLoader.h"
 #include "AssetStorage.h"
-#include "../BaseObject/ModelObject.h"
 #include "../Engine/EngineUtils.h"
+#include "../Components/Model.h"
 
 namespace Asset {
     std::vector<Texture> ModelLoader::textures_loaded;
@@ -25,7 +24,7 @@ namespace Asset {
         }
     }
 
-    Engine::GameObject* ModelLoader::LoadModelGameObject(const std::string& name, const std::string& path,Shader* shader,bool hasBone) {
+    void ModelLoader::LoadModelGameObject(Engine::GameObject* rootGO,const std::string& name,const std::string& path,Shader* shader,Skeleton* skeleton ) {
         Assimp::Importer importer;
         const aiScene* scene = importer.ReadFile(path,
         aiProcess_Triangulate |
@@ -37,22 +36,16 @@ namespace Asset {
 
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
             std::cout << "ERROR::ASSIMP:: " << importer.GetErrorString() << std::endl;
-            return nullptr;
-        }
-        std::shared_ptr<Skeleton> skeleton = nullptr;
-        if (hasBone) {
-            AssetStorage<Skeleton>::Load(name,path);
+            return ;
         }
 
         const std::string directory = path.substr(0, path.find_last_of('/'));
-        Engine::GameObject* rootGO = Game::Get(Game::CreateObject<Prefab::ModelObject>(name));
-        processNode(name,rootGO,scene->mRootNode, scene, directory,shader, skeleton.get());
+        processNode(name,rootGO,scene->mRootNode, scene, directory,shader, skeleton);
         rootGO->getComponent<Components::Model>()->UpdateMeshChildren();
         if (shader)
             rootGO->getComponent<Components::Model>()->SetShader(shader);
         if (skeleton)
             rootGO->addComponent<Components::Animator>();
-        return rootGO;
     }
 
     void ModelLoader::processNode(const std::string& name, Engine::GameObject* parent,const aiNode* node, const aiScene* scene, const std::string& directory,Shader* shader, Skeleton* skeleton) {

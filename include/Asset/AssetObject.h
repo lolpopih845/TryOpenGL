@@ -11,6 +11,7 @@ namespace Asset {
         SHADER,
         MATERIAL,
         SKELETON,
+        MODEL,
         SOUND,
         ANIMATION
     };

@@ -5,7 +5,7 @@
 namespace Engine {
     void CameraMan::CreateCamera(const std::string &name, Transform transform, GameObjectID parent,
             glm::vec2 viewPortOffset, glm::vec2 viewPortSize, glm::vec3 up, float yaw, float pitch) {
-        const GameObjectID id = ObjectManager::CreateObject<Prefab::CameraObject>(0, name, transform, parent, viewPortOffset, viewPortSize, up, yaw, pitch);
+        const GameObjectID id = ObjectManager::CreateObject<Prefab::CameraObject>(name, transform, parent, viewPortOffset, viewPortSize, up, yaw, pitch);
         cameras.push_back(id);
     }
 

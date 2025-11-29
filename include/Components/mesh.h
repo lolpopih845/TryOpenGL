@@ -2,12 +2,10 @@
 #define MESH_H
 
 #include <glm/glm.hpp>
-#include "../Asset/shader.h"
 #include "../Asset/texture.h"
 #include <vector>
 #include "component.h"
 #include "transform.h"
-#include "iostream"
 
 #define MAX_BONE_INFLUENCE 4
 namespace Engine {
@@ -47,18 +45,18 @@ namespace Components {
     public:
         std::vector<Engine::Vertex> vertices;
         std::vector<unsigned int> indices;
-        std::vector<Asset::Texture> textures;
+        std::vector<Asset::Texture*> textures;
         unsigned int VAO;
 
         explicit Mesh(const std::vector<Engine::Vertex> &vertices = {},
                       const std::vector<unsigned int> &indices = {},
-                      const std::vector<Asset::Texture> &textures = {},
+                      const std::vector<Asset::Texture*> &textures = {},
                       bool use_tangent = false,
                       bool use_skinning = false);
 
         void setupMesh(const std::vector<Engine::Vertex> &vertices,
                        const std::vector<unsigned int> &indices,
-                       const std::vector<Asset::Texture> &textures,
+                       const std::vector<Asset::Texture*> &textures,
                       bool use_tangent = false,
                       bool use_skinning = false);
         void SetSkinning(bool use_skinning);

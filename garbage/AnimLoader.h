@@ -1,4 +1,4 @@
-#ifndef ANIMLOADER_H
+    #ifndef ANIMLOADER_H
 #define ANIMLOADER_H
 #include <memory>
 #include <stdexcept>

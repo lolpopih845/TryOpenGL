@@ -5,10 +5,10 @@
 
 namespace Components {
     Mesh::Mesh(const std::vector<Engine::Vertex> &vertices, const std::vector<unsigned int> &indices,
-    const std::vector<Asset::Texture> &textures, const bool use_tangent, const bool use_skinning) : vertices(std::move(vertices)),
+    const std::vector<Asset::Texture*> &textures, const bool use_tangent, const bool use_skinning) : vertices(std::move(vertices)),
       indices(std::move(indices)),textures(std::move(textures)),use_tangent(use_tangent),use_skinning(use_skinning),VAO(0), VBO(0), EBO(0) {}
 
-    void Mesh::setupMesh(const std::vector<Engine::Vertex> &vertices_, const std::vector<unsigned int> &indices_, const std::vector<Asset::Texture> &textures_, bool use_tangent_, bool use_skinning_) {
+    void Mesh::setupMesh(const std::vector<Engine::Vertex> &vertices_, const std::vector<unsigned int> &indices_, const std::vector<Asset::Texture*> &textures_, bool use_tangent_, bool use_skinning_) {
         vertices = std::move(vertices_);
         indices = std::move(indices_);
         textures = std::move(textures_);
@@ -48,7 +48,7 @@ namespace Components {
         {
             glActiveTexture(GL_TEXTURE0 + i);
             std::string number;
-            std::string name = textures[i].type;
+            std::string name = textures[i]->type;
             if(name == "texture_diffuse")
                 number = std::to_string(diffuseNr++);
             else if(name == "texture_specular")
@@ -57,7 +57,7 @@ namespace Components {
                 number = std::to_string(normalNr++);
             else if(name == "texture_height")
                 number = std::to_string(heightNr++);
-            textures[i].bind();
+            textures[i]->bind();
             shader->setInt((name + number).c_str(),i);
         }
         glBindVertexArray(VAO);
