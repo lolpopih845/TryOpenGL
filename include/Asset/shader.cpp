@@ -180,11 +180,11 @@ void Shader::checkCompileErrors(const GLuint shader, const std::string &type) {
     }
 }
     Shader& DefaultShader() {
-        static Shader defaultShader("Default","shaders/DefaultV.glsl", "shaders/DefaultF.glsl");
+        static Shader defaultShader("Default","../resources/shaders/DefaultV.glsl", "../resources/shaders/DefaultF.glsl");
         return defaultShader;
     }
     Shader& SkyBoxShader() {
-    static Shader defaultShader("SkyBox","shaders/SkyBoxV.glsl", "shaders/SkyBoxF.glsl");
+    static Shader defaultShader("SkyBox","../resources/shaders/SkyBoxV.glsl", "../resources/shaders/SkyBoxF.glsl");
     return defaultShader;
 }
 }

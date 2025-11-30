@@ -38,10 +38,10 @@ inline void GameInit() {
     }
     glViewport(0, 0, width, height);
 
-    Engine::Scene({glm::vec4(1), glm::vec4(1), glm::vec4(1), glm::vec4(1)});
+    Engine::Scene mainScene = Engine::Scene({glm::vec4(1), glm::vec4(1), glm::vec4(1), glm::vec4(1)});
+    mainScene.Activate();
 
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    CreateCamera("MainCamera",Engine::DEFAULT_TRANSFORM,Engine::INVALID_ID,glm::vec2(0.0f),glm::vec2(1.0f));
     AdjustCameraViewPort(window, width, height);
 
 

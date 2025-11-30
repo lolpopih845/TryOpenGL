@@ -1,7 +1,7 @@
 #include "CameraMan.h"
 #include "Scene.h"
 #include "ObjectManager.h"
-
+#include <iostream>
 namespace Engine {
     void CameraMan::CreateCamera(const std::string &name, Transform transform, GameObjectID parent,
             glm::vec2 viewPortOffset, glm::vec2 viewPortSize, glm::vec3 up, float yaw, float pitch) {
@@ -34,7 +34,7 @@ namespace Engine {
 
         mainViewport.width = width;
         mainViewport.height = height;
-        for(auto& camObj : cameras) {
+        for(auto camObj : cameras) {
             const auto cam = scene->objects.Get(camObj)->getComponent<Components::Camera>();
             const auto camViewSize = glm::vec2(mainViewport.width * cam->viewPortSize.x, mainViewport.height*cam->viewPortSize.y);
             const auto camViewOffset = glm::vec2(camViewSize.x * cam->viewPortOffset.x, camViewSize.y * cam->viewPortOffset.y);

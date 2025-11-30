@@ -112,12 +112,12 @@ std::ostream& operator<<(std::ostream& os, const Texture& texture) {
 }
     Texture & DefaultSkyBoxTexture() {
         std::vector<std::string> f = {
-            "resources/sky3.jpg",
-            "resources/sky3.jpg",
-            "resources/sky1.jpg",
-            "resources/sky1.jpg",
-            "resources/sky2.jpg",
-            "resources/sky2.jpg"};
+            "../resources/textures/sky3.jpg",
+            "../resources/textures/sky3.jpg",
+            "../resources/textures/sky1.jpg",
+            "../resources/textures/sky1.jpg",
+            "../resources/textures/sky2.jpg",
+            "../resources/textures/sky2.jpg"};
         static Texture defaultSkyBoxTexture("DefaultSkyBox",f);
         return defaultSkyBoxTexture;
     }

@@ -75,7 +75,7 @@ void Camera::setupShaderCameraBuffer() {
         Game::GetSoundEngine()->setListenerPosition(s_pos, s_look,{0,0,0},{0,1,0});
 
         //Render Skybox
-        Game::CAM.GetSkybox()->render(this);
+        Game::CAM().GetSkybox()->render(this);
 
         //Render Object --> ObjectManager
     }
