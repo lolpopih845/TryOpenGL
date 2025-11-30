@@ -25,7 +25,7 @@ public:
     void SetUpCameraPerspective(float fovY, float aspect, float near, float far);
     void setupShaderCameraBuffer();
     void init() override;
-    void cameraRender(float dtime);
+    void cameraRender();
     void update(float dtime) override;
     const char *getComponentName() const override;
     friend std::ostream& operator<<(std::ostream& os, const Camera& camera);

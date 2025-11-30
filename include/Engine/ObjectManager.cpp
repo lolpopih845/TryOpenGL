@@ -26,6 +26,12 @@ namespace Engine {
         CleanupDestroyedObjects();
     }
 
+    void ObjectManager::RenderAll() {
+        for (const auto& [obj,gen] : active_objects)
+            if (obj->isActive()&&!obj->destroyed)
+                obj->render();
+    }
+
     GameObject * ObjectManager::Get(const GameObjectID id) const {
         if (id.idx >= active_objects.size()) return nullptr;
         auto &slot = active_objects[id.idx];

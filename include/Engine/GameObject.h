@@ -64,6 +64,8 @@ namespace Engine {
 
         void update(float dTime) const;
 
+        void render() const;
+
         void setActive(bool active);
 
         bool isActive() const;

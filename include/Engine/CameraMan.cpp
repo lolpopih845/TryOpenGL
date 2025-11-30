@@ -1,7 +1,6 @@
 #include "CameraMan.h"
 #include "Scene.h"
 #include "ObjectManager.h"
-#include <iostream>
 namespace Engine {
     void CameraMan::CreateCamera(const std::string &name, Transform transform, GameObjectID parent,
             glm::vec2 viewPortOffset, glm::vec2 viewPortSize, glm::vec3 up, float yaw, float pitch) {
@@ -28,6 +27,14 @@ namespace Engine {
             }
         }
         return INVALID_ID;
+    }
+
+    void CameraMan::RenderAll() const {
+        for (const auto& camID : cameras) {
+            Components::Camera* cam = scene->objects.Get(camID)->getComponent<Components::Camera>();
+            cam->cameraRender();
+            scene->objects.RenderAll();
+        }
     }
 
     void CameraMan::AdjustCameraViewPort(GLFWwindow *window, int width, int height) {

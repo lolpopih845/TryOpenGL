@@ -30,6 +30,9 @@ namespace Engine {
         };
         void DestroyObject(GameObjectID id);
         void UpdateAll(float dTime);
+
+        void RenderAll();
+
         GameObject* Get(GameObjectID id) const;
         void SetParent(GameObjectID child, GameObjectID parent) const;
         void AddChild(GameObjectID parent, GameObjectID child) const;

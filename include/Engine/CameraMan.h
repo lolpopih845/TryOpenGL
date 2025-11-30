@@ -36,6 +36,7 @@ public:
     GameObjectID GetCamera(int cam = 0) const;
 
     GameObjectID GetCamera(const std::string &name) const;
+    void RenderAll() const;
     SkyBox* GetSkybox(){ return &skybox; }
     void AdjustCameraViewPort(GLFWwindow* window, int width, int height);
     ViewPort mainViewport;

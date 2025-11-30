@@ -25,6 +25,14 @@ namespace Engine {
         }
     }
 
+    void GameObject::render() const {
+        for (auto& c : components) {
+            if (const auto r = dynamic_cast<Components::Renderer*>(c.get()))
+                if (c->isEnabled())
+                    r->render();
+        }
+    }
+
     void GameObject::setActive(const bool active) {
         this->active = active;
     }

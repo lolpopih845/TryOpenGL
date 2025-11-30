@@ -45,7 +45,7 @@ void Camera::setupShaderCameraBuffer() {
         glBindBufferBase(GL_UNIFORM_BUFFER, 0, UBO);
 }
 
-    void Camera::cameraRender(float dtime) {
+    void Camera::cameraRender() {
         //Create New ViewPort
         glViewport(cameraViewPort[0], cameraViewPort[1], cameraViewPort[2], cameraViewPort[3]);
 
