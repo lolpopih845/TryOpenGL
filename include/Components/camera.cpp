@@ -28,22 +28,22 @@ namespace Components {
         transform = gameObject->getComponent<Transform>();
     }
 
-// returns the view matrix calculated using Euler Angles and the LookAt Matrix
-glm::mat4 Camera::GetViewMatrix() const {
-    return glm::lookAt(Position, Position + Front, Up);
-}
+    // returns the view matrix calculated using Euler Angles and the LookAt Matrix
+    glm::mat4 Camera::GetViewMatrix() const {
+        return glm::lookAt(Position, Position + Front, Up);
+    }
 
-void Camera::SetUpCameraPerspective(float fovY, const float aspect,const float nearr, const float farr) {
-    projection = glm::perspective(fovY, aspect, nearr, farr);
-}
+    void Camera::SetUpCameraPerspective(float fovY, const float aspect,const float nearr, const float farr) {
+        projection = glm::perspective(fovY, aspect, nearr, farr);
+    }
 
-void Camera::setupShaderCameraBuffer() {
-    glGenBuffers(1, &UBO);
-    glBindBuffer(GL_UNIFORM_BUFFER, UBO);
-    glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4) + sizeof(glm::vec4), nullptr, GL_DYNAMIC_DRAW);
-    glBindBufferRange(GL_UNIFORM_BUFFER, 0, UBO, 0, 2 * sizeof(glm::mat4) + sizeof(glm::vec4));
-        glBindBufferBase(GL_UNIFORM_BUFFER, 0, UBO);
-}
+    void Camera::setupShaderCameraBuffer() {
+        glGenBuffers(1, &UBO);
+        glBindBuffer(GL_UNIFORM_BUFFER, UBO);
+        glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4) + sizeof(glm::vec4), nullptr, GL_DYNAMIC_DRAW);
+        glBindBufferRange(GL_UNIFORM_BUFFER, 0, UBO, 0, 2 * sizeof(glm::mat4) + sizeof(glm::vec4));
+            glBindBufferBase(GL_UNIFORM_BUFFER, 0, UBO);
+    }
 
     void Camera::cameraRender() {
         //Create New ViewPort
@@ -80,12 +80,43 @@ void Camera::setupShaderCameraBuffer() {
         //Render Object --> ObjectManager
     }
 
+    // void Camera::ProcessMouseMovement(float xOffset, float yOffset, const float sensitivity) {
+    //     xOffset *= sensitivity;
+    //     yOffset *= sensitivity;
+    //
+    //     Yaw   += xOffset;
+    //     Pitch += yOffset;
+    //
+    //     if(Pitch > 89.0f) Pitch = 89.0f;
+    //     if(Pitch < -89.0f) Pitch = -89.0f;
+    //
+    //     glm::vec3 front;
+    //     front.x = cos(glm::radians(Yaw)) * cos(glm::radians(Pitch));
+    //     front.y = sin(glm::radians(Pitch));
+    //     front.z = sin(glm::radians(Yaw)) * cos(glm::radians(Pitch));
+    //     Front = glm::normalize(front);
+    //     Right = glm::normalize(glm::cross(Front, WorldUp));
+    //     Up    = glm::normalize(glm::cross(Right, Front));
+    // }
+    //
+    // void Camera::ProcessKeyboard(const int direction, const float deltaTime, const float speed) const {
+    //     float velocity = speed * deltaTime;
+    //     glm::vec3 movement(0.0f);
+    //     if(direction == 0) movement += Front * velocity;
+    //     if(direction == 1) movement -= Front * velocity;
+    //     if(direction == 2) movement -= Right * velocity;
+    //     if(direction == 3) movement += Right * velocity;
+    //
+    //     if(transform) {
+    //         Engine::Transform t = transform->getTransform();
+    //         t.translation += movement;
+    //         transform->setTransform(t);
+    //     }
+    // }
 
-void Camera::update(float dtime) {
-    //Nothing
-
-
-}
+    void Camera::update(float dtime) {
+        //Nothing
+    }
     const char *Camera::getComponentName() const {
         return "Camera";
     }

@@ -26,6 +26,8 @@ public:
     void setupShaderCameraBuffer();
     void init() override;
     void cameraRender();
+    void ProcessMouseMovement(float xOffset, float yOffset, float sensitivity = 0.1f);
+    void ProcessKeyboard(int direction, float deltaTime, float speed = 2.5f) const;
     void update(float dtime) override;
     const char *getComponentName() const override;
     friend std::ostream& operator<<(std::ostream& os, const Camera& camera);

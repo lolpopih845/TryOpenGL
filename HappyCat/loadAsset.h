@@ -1,6 +1,8 @@
 #ifndef LOADASSET_H
 #define LOADASSET_H
 #include "../include/Asset/AssetStorage.h"
+#include "../include/Asset/ModelLoader.h"
+#include "../include/Engine/EngineUtils.h"
 
 inline void LoadAsset() {
     // Asset::Shader _3DShader("3Ds","shaders/3Dv.hlsl", "shaders/3Df.hlsl");
@@ -16,6 +18,10 @@ inline void LoadAsset() {
     // monster->getComponent<Components::MixamoBoy>()->camera = &camera;
     // monster->name = "monster";
 
+    // TODO() Add folder name happyCat at /resources/model, and then add Arm.fbx and CatBoi.fbx inside it.
+    Engine::GameObject* catBoiGO = new Engine::GameObject(catBoiID, "catBoi", defaultTransform);
+    Game::Scene::GetCurrentScene()->objects.Add(catBoiGO);
+    catBoi = Asset::ModelLoader::LoadModelGameObject("catBoi", "resources/models/happyCat/Catboi.fbx", "", true);
 }
 
 #endif //LOADASSET_H

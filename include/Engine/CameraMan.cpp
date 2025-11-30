@@ -47,7 +47,7 @@ namespace Engine {
             const auto camViewOffset = glm::vec2(camViewSize.x * cam->viewPortOffset.x, camViewSize.y * cam->viewPortOffset.y);
             const auto camViewPosition = glm::vec2(mainViewport.width/2 - camViewSize.x/2 + camViewOffset.x, mainViewport.height/2 - camViewSize.y/2 + camViewOffset.y);
             cam->cameraViewPort[0] = camViewPosition.x;
-            cam->cameraViewPort[1] =camViewPosition.y;
+            cam->cameraViewPort[1] = camViewPosition.y;
             cam->cameraViewPort[2] = camViewSize.x;
             cam->cameraViewPort[3] = camViewSize.y;
             cam->SetUpCameraPerspective(glm::radians(45.0f),camViewSize.x / camViewSize.y,0.1f,10.f);
@@ -104,7 +104,10 @@ namespace Engine {
         };
         glBindVertexArray(VAO);
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER,
+             skyboxVertices.size() * sizeof(float),
+             skyboxVertices.data(),
+             GL_STATIC_DRAW);
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)nullptr);
     }

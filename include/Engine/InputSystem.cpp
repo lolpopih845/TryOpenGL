@@ -64,7 +64,7 @@ namespace Engine {
 
         double x, y;
         glfwGetCursorPos(window, &x, &y);
-        if (mousePosition == glm::vec2{-9999,-99999} ) {
+        if (mousePosition == glm::vec2{-9999,-9999} ) {
             mouseLastPosition = {x, y};
         }
         mouseLastPosition = mousePosition;
