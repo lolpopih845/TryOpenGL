@@ -9,7 +9,7 @@
 namespace Components {
     class Collider;
     class Transform;
-    class Rigibody;
+    // class Rigibody;
 }
 
 namespace Engine {
@@ -36,7 +36,7 @@ namespace Engine {
         GameObjectID id;
         Components::Collider* collider;
         Components::Transform* transform;
-        Components::Rigibody* rigid;
+        // Components::Rigibody* rigid;
     };
 
     class PhysicsSystem {

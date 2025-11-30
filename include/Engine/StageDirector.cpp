@@ -4,7 +4,7 @@
 
 #include "StageDirector.h"
 #include "Scene.h"
-#include <glm/gtc/type_ptr.inl>
+#include <irrKlang/irrKlang.h>
 
 namespace Engine {
     void StageDirector::Init() {

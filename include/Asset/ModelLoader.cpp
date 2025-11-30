@@ -11,9 +11,10 @@
 #include "AssetStorage.h"
 #include "../Engine/EngineUtils.h"
 #include "../Components/Model.h"
+#include "../Engine/GameObjDef.h"
 
 namespace Asset {
-    std::vector<Texture> ModelLoader::textures_loaded;
+    std::vector<Texture*> ModelLoader::textures_loaded;
 
     void SetVertexBoneDataToDefault(Engine::Vertex& vertex)
     {
@@ -62,11 +63,11 @@ namespace Asset {
     void ModelLoader::processMesh(const std::string& name, Engine::GameObject* parent, aiMesh *mesh, const aiScene *scene, const std::string &directory,Shader* shader,Skeleton* skeleton) {
         std::vector<Engine::Vertex> vertices;
         std::vector<unsigned int> indices;
-        std::vector<Texture> textures;
+        std::vector<Texture*> textures;
 
         for(unsigned int i = 0; i < mesh->mNumVertices; i++)
         {
-            Engine::Vertex vertex;
+            Engine::Vertex vertex{};
             if (skeleton != nullptr) SetVertexBoneDataToDefault(vertex);
             vertex.Position = glm::vec3(mesh->mVertices[i].x,mesh->mVertices[i].y,mesh->mVertices[i].z);
             if (mesh->HasNormals())
@@ -94,10 +95,10 @@ namespace Asset {
 
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
-        std::vector<Texture> diffuseMaps = loadMaterialTextures(name, material, aiTextureType_DIFFUSE, "texture_diffuse",directory);
-        std::vector<Texture> specularMaps = loadMaterialTextures(name, material, aiTextureType_SPECULAR, "texture_specular",directory);
-        std::vector<Texture> normalMaps = loadMaterialTextures(name, material, aiTextureType_HEIGHT, "texture_normal",directory);
-        std::vector<Texture> heightMaps = loadMaterialTextures(name, material, aiTextureType_AMBIENT, "texture_height",directory);
+        std::vector<Texture*> diffuseMaps = loadMaterialTextures(name, material, aiTextureType_DIFFUSE, "texture_diffuse",directory);
+        std::vector<Texture*> specularMaps = loadMaterialTextures(name, material, aiTextureType_SPECULAR, "texture_specular",directory);
+        std::vector<Texture*> normalMaps = loadMaterialTextures(name, material, aiTextureType_HEIGHT, "texture_normal",directory);
+        std::vector<Texture*> heightMaps = loadMaterialTextures(name, material, aiTextureType_AMBIENT, "texture_height",directory);
 
         textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
         textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
@@ -107,9 +108,9 @@ namespace Asset {
         if (skeleton != nullptr) ExtractBoneWeightForVertices(vertices,mesh,skeleton);
 
         if (skeleton)
-            Engine::ObjectManager::CreateObject<Prefab::MeshObject>("mesh",parent, std::move(vertices), std::move(indices), std::move(textures),false,true);
+            Game::CreateObject<Prefab::MeshObject>("mesh", Engine::DEFAULT_TRANSFORM,parent->id, std::move(vertices), std::move(indices), std::move(textures),false,true);
         else
-            Engine::ObjectManager::CreateObject<Prefab::MeshObject>("mesh",parent, std::move(vertices), std::move(indices), std::move(textures));
+            Game::CreateObject<Prefab::MeshObject>("mesh", Engine::DEFAULT_TRANSFORM, parent->id, std::move(vertices), std::move(indices), std::move(textures));
     }
 
     void SetVertexBoneData(Engine::Vertex& vertex, int boneID, float weight)
@@ -145,24 +146,24 @@ namespace Asset {
     }
 
 
-    std::vector<Texture> ModelLoader::loadMaterialTextures(const std::string& name, const aiMaterial* mat, const aiTextureType type, const std::string& typeName, const std::string& directory)
+    std::vector<Texture*> ModelLoader::loadMaterialTextures(const std::string& name, const aiMaterial* mat, const aiTextureType type, const std::string& typeName, const std::string& directory)
     {
-        std::vector<Texture> textures;
+        std::vector<Texture*> textures;
         for(unsigned int i = 0; i < mat->GetTextureCount(type); i++)
         {
             aiString str;
             mat->GetTexture(type, i, &str);
             std::string path = directory + "/" + str.C_Str();
             bool skip = false;
-            for (auto& loaded : textures_loaded) {
-                if (loaded.path == path) {
+            for (auto loaded : textures_loaded) {
+                if (loaded->path == path) {
                     textures.push_back(loaded);
                     skip = true;
                     break;
                 }
             }
             if (!skip) {
-                Texture texture(name+"_"+typeName,(path.c_str()), typeName);
+                Texture* texture = AssetStorage<Texture>::Load(name+"_"+typeName,(path.c_str()), typeName);
                 textures.push_back(texture);
                 textures_loaded.push_back(texture);
             }

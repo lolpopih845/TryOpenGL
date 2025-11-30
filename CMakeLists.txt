@@ -4,7 +4,7 @@ project(OpenGLProject)
 set(CMAKE_CXX_STANDARD 17)
 
 # Root directory for your libs
-set(LIB_ROOT "C:/OpenGL/MSVC")
+set(LIB_ROOT "C:/Users/HP/Desktop/Ug/Y3/GE/OpenGL")
 
 # === Source files ===
 file(GLOB_RECURSE SOURCE_FILES
@@ -44,11 +44,25 @@ target_link_libraries(OpenGLProject
         opengl32
         assimp
         freetype
+        irrKlang
 )
 
 # === Copy DLLs after build (if they exist) ===
 add_custom_command(TARGET OpenGLProject POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${LIB_ROOT}/lib/assimp.dll"
+        "${LIB_ROOT}/dlls/assimp-vc140-mt.dll"
+        $<TARGET_FILE_DIR:OpenGLProject>
+)
+
+# Copy IrrKlang DLL
+add_custom_command(TARGET OpenGLProject POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${LIB_ROOT}/dlls/irrKlang.dll"
+        $<TARGET_FILE_DIR:OpenGLProject>
+)
+
+add_custom_command(TARGET OpenGLProject POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${LIB_ROOT}/dlls/ikpMP3.dll"
         $<TARGET_FILE_DIR:OpenGLProject>
 )

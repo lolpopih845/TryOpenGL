@@ -1,7 +1,6 @@
 #ifndef MESH_H
 #define MESH_H
 
-#include <glm/glm.hpp>
 #include "../Asset/texture.h"
 #include <vector>
 #include "component.h"

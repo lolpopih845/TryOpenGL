@@ -2,9 +2,6 @@
 #include "animator.h"
 
 #include <iostream>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/quaternion.hpp>
-#include <glm/gtx/quaternion.hpp>
 
 #include "Model.h"
 #include "../Engine/GameObject.h"
@@ -88,7 +85,7 @@ namespace Components {
         glm::vec3 scaleFinal = glm::mix(scale1, scale2, m_blendAmount);
 
         return glm::translate(glm::mat4(1.0f), posFinal) *
-               glm::toMat4(rotFinal) *
+               quatToMat4(rotFinal) *
                glm::scale(glm::mat4(1.0f), scaleFinal);
     }
 
@@ -120,7 +117,7 @@ namespace Components {
 
             nodeTransform =
                 glm::translate(glm::mat4(1.0f), pos) *
-                glm::toMat4(rot) *
+                quatToMat4(rot) *
                 glm::scale(glm::mat4(1.0f), scale);
         }
         else if (ch1)

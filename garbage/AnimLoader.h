@@ -5,7 +5,6 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-#include <glm/gtc/type_ptr.hpp>
 
 #include "../Asset/skeleton.h"
 #include "../Asset/animation.h"

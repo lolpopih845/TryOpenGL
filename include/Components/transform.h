@@ -1,7 +1,6 @@
 #ifndef TRANSFORM_H
 #define TRANSFORM_H
 #include "component.h"
-#include <glm/glm.hpp>
 
 
 #include "../Engine/GameObject.h"

@@ -11,7 +11,7 @@ public:
                const Engine::GameObjectID id, const std::string &name, const Engine::Transform &transform = Engine::DEFAULT_TRANSFORM, const Engine::GameObjectID parent = Engine::INVALID_ID,
                const std::vector<Engine::Vertex>& vertices = {},
                const std::vector<unsigned int>& indices = {},
-               const std::vector<Asset::Texture>& textures = {},
+               const std::vector<Asset::Texture*>& textures = {},
                bool use_tangent = false,
                bool use_skinning = false): GameObject(id, name,transform, parent)
     {

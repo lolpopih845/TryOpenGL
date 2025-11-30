@@ -2,8 +2,6 @@
 #include <memory>
 #include "glLib.h"
 #include "FileSystem.h"
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/quaternion.hpp>
 
 namespace Engine {
     class GameObject;
@@ -68,6 +66,10 @@ namespace Engine {
         uint32_t gen;
     };
 
+    inline bool operator==(const GameObjectID& lhs, const GameObjectID& rhs) {
+        return lhs.idx == rhs.idx && lhs.gen == rhs.gen;
+    }
+
     struct GameObjectSlot {
         std::unique_ptr<GameObject> obj;
         uint32_t gen = 0;
@@ -81,4 +83,13 @@ namespace Engine {
 
 
 
+}
+
+namespace std {
+    template<>
+    struct hash<Engine::GameObjectID> {
+        size_t operator()(const Engine::GameObjectID& id) const noexcept {
+            return (static_cast<size_t>(id.idx) << 32) | id.gen;
+        }
+    };
 }

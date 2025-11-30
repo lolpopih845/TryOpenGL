@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <memory>
 #include <iostream>
+#include "AssetObject.h"
 namespace Asset {
     template<typename T>
 class AssetStorage {

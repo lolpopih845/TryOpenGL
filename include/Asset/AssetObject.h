@@ -2,6 +2,7 @@
 #define ASSETOBJECT_H
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "../Engine/FileSystem.h"
 

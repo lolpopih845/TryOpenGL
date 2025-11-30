@@ -3,8 +3,6 @@
 //
 
 #include "camera.h"
-#include <glm/gtc/type_ptr.inl>
-#include <glm/gtc/matrix_transform.hpp>
 
 #include "../Engine/EngineUtils.h"
 #include "../Engine/GameObject.h"

@@ -13,7 +13,21 @@ namespace Engine {
     public:
         Scene* scene;
         template <typename T, typename ... Args>
-        GameObjectID CreateObject(Args&& ...args);
+        GameObjectID CreateObject(Args&& ...args) {
+            uint32_t idx;
+            if (!freeSpaceList.empty()) {
+                idx = freeSpaceList.back();
+                freeSpaceList.pop_back();
+            }
+            else {
+                idx = active_objects.size();
+                active_objects.push_back({});
+            }
+            const GameObjectID id{ idx, active_objects[idx].gen };
+            active_objects[idx].obj = std::make_unique<T>(id,std::forward<Args>(args)...);
+            pending_objects.push_back(id);
+            return id;
+        };
         void DestroyObject(GameObjectID id);
         void UpdateAll(float dTime);
         GameObject* Get(GameObjectID id) const;

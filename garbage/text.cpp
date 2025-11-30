@@ -5,7 +5,6 @@
 #include "text.h"
 #include <iostream>
 
-#include <glm/gtc/matrix_transform.hpp>
 #include <ft2build.h>
 #include FT_FREETYPE_H
 

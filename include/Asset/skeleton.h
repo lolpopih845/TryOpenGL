@@ -2,14 +2,12 @@
 #ifndef SKELETON_H
 #define SKELETON_H
 
-#include <glm/glm.hpp>
 #include <vector>
 #include <string>
 #include <unordered_map>
 #include <iostream>
 #include <memory>
 #include <assimp/scene.h>
-#include <glm/gtc/type_ptr.hpp>
 
 #include "AssetObject.h"
 

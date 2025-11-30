@@ -17,7 +17,7 @@
 namespace Asset {
 class ModelLoader {
 public:
-    static std::vector<Texture> textures_loaded;
+    static std::vector<Texture*> textures_loaded;
     static void LoadModelGameObject(Engine::GameObject* model,const std::string& name,const std::string& path, Shader* shader = nullptr,Skeleton* skeleton = nullptr);
 private:
     static void processNode(const std::string& name,Engine::GameObject* parent,const aiNode* node, const aiScene* scene, const std::string& directory,Shader* shader, Skeleton* skeleton);
@@ -25,7 +25,7 @@ private:
 
     static void ExtractBoneWeightForVertices(std::vector<Engine::Vertex>& vertices, const aiMesh* mesh, Skeleton* skeleton);
 
-    static std::vector<Texture> loadMaterialTextures(const std::string& name,const aiMaterial* mat, aiTextureType type, const std::string& typeName, const std::string& directory);
+    static std::vector<Texture*> loadMaterialTextures(const std::string& name,const aiMaterial* mat, aiTextureType type, const std::string& typeName, const std::string& directory);
 };
 
 } // Engine

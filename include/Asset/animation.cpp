@@ -3,7 +3,6 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-#include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
 namespace Asset {

@@ -8,6 +8,8 @@
 #include "../Components/Collider.h"
 
 namespace Engine {
+    std::vector<PhysicsData> PhysicsSystem::physics_object;
+    std::unordered_map<GameObjectID, PhysicsData> PhysicsSystem::physicsMap;
 
     void PhysicsSystem::RegisterPhysics(const GameObjectID id) {
         // Check Dup
@@ -20,7 +22,7 @@ namespace Engine {
         PhysicsData data;
         data.id = id;
         data.collider = go->getComponent<Components::Collider>();
-        data.rigid = go->getComponent<Components::Rigibody>();
+        // data.rigid = go->getComponent<Components::Rigibody>();
         data.transform = go->getComponent<Components::Transform>();
         physics_object.push_back(data);
         physicsMap[id] = data;

@@ -2,10 +2,8 @@
 #define SCENEDIRECTOR_H
 
 #include <vector>
-#include <glm/detail/func_trigonometric.inl>
-
-#include "glm/vec4.hpp"
 #include <irrKlang/irrKlang.h>
+#include "glLib.h"
 
 
 namespace Engine {

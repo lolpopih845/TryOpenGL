@@ -4,6 +4,11 @@
 
 
 namespace Engine {
+    std::unordered_map<KeyCode, bool> InputSystem::keyStatePrev;
+    std::unordered_map<KeyCode, bool> InputSystem::keyStateCurr;
+    std::unordered_map<MouseCode, bool> InputSystem::mouseStatePrev;
+    std::unordered_map<MouseCode, bool> InputSystem::mouseStateCurr;
+
     void InputSystem::updateTrackKey(KeyCode key) {
         if (keyStateCurr.find(key)==keyStateCurr.end()) {
             keyStateCurr[key] = false;
