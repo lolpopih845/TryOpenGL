@@ -31,6 +31,7 @@ namespace Engine {
     }
 
     void CameraMan::AdjustCameraViewPort(GLFWwindow *window, int width, int height) {
+
         mainViewport.width = width;
         mainViewport.height = height;
         for(auto& camObj : cameras) {
@@ -44,6 +45,7 @@ namespace Engine {
             cam->cameraViewPort[3] = camViewSize.y;
             cam->SetUpCameraPerspective(glm::radians(45.0f),camViewSize.x / camViewSize.y,0.1f,10.f);
         }
+
     }
 
     SkyBox::SkyBox(): texture(&Asset::DefaultSkyBoxTexture()),shader(&Asset::SkyBoxShader()) {

@@ -13,6 +13,9 @@ namespace Prefab {
     public:
         explicit Player(const Engine::GameObjectID id,const std::string &name,const Engine::Transform &transform = Engine::DEFAULT_TRANSFORM, Engine::GameObjectID parent = Engine::INVALID_ID):
         ModelObject(id,name,"",true,transform, parent) {
+            addComponent<Collider>(glm::vec3(0),glm::vec3(1));
+            Mesh* mesh = getComponent<Mesh>();
+            mesh->textures.push_back(AssetStorage<Texture>::Get("Floor"));
         }
     };
 }
