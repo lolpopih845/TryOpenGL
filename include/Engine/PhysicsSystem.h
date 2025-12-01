@@ -9,7 +9,7 @@
 namespace Components {
     class Collider;
     class Transform;
-    // class Rigibody;
+    class Rigidbody;
 }
 
 namespace Engine {
@@ -34,9 +34,9 @@ namespace Engine {
 
     struct PhysicsData {
         GameObjectID id;
-        Components::Collider* collider;
-        Components::Transform* transform;
-        // Components::Rigibody* rigid;
+        Components::Collider* collider = nullptr;
+        Components::Transform* transform = nullptr;
+        Components::Rigidbody* rigid = nullptr;
     };
 
     class PhysicsSystem {

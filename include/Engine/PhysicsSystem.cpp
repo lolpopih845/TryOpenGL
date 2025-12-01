@@ -6,6 +6,7 @@
 
 #include "EngineUtils.h"
 #include "../Components/Collider.h"
+#include "../Components/Rigidbody.h"
 
 namespace Engine {
     std::vector<PhysicsData> PhysicsSystem::physics_object;
@@ -22,7 +23,7 @@ namespace Engine {
         PhysicsData data;
         data.id = id;
         data.collider = go->getComponent<Components::Collider>();
-        // data.rigid = go->getComponent<Components::Rigibody>();
+        data.rigid = go->getComponent<Components::Rigidbody>();
         data.transform = go->getComponent<Components::Transform>();
         physics_object.push_back(data);
         physicsMap[id] = data;
@@ -47,6 +48,66 @@ namespace Engine {
                 }
     }
 
+    bool ComputeAABBDistance(const Components::Collider* A, const Components::Collider* B,
+                         glm::vec3& outPenetration) {
+
+        const Transform tA = A->gameObject->getComponent<Components::Transform>()->getGlobalTransform();
+        const Transform tB = B->gameObject->getComponent<Components::Transform>()->getGlobalTransform();
+
+        glm::vec3 aMin = tA.translation + A->center - A->size * 0.5f;
+        glm::vec3 aMax = tA.translation + A->center + A->size * 0.5f;
+
+        glm::vec3 bMin = tB.translation + B->center - B->size * 0.5f;
+        glm::vec3 bMax = tB.translation + B->center + B->size * 0.5f;
+
+        // Compute overlap on each axis
+        float dx = std::min(aMax.x, bMax.x) - std::max(aMin.x, bMin.x);
+        float dy = std::min(aMax.y, bMax.y) - std::max(aMin.y, bMin.y);
+        float dz = std::min(aMax.z, bMax.z) - std::max(aMin.z, bMin.z);
+
+        if (dx <= 0 || dy <= 0 || dz <= 0)
+            return false; // no penetration
+
+        // Choose the smallest axis to resolve first
+        if (dx < dy && dx < dz)
+            outPenetration = { dx, 0, 0 };
+        else if (dy < dz)
+            outPenetration = { 0, dy, 0 };
+        else
+            outPenetration = { 0, 0, dz };
+
+        // Direction: push A away from B
+        glm::vec3 centerA = (aMin + aMax) * 0.5f;
+        glm::vec3 centerB = (bMin + bMax) * 0.5f;
+
+        outPenetration *= glm::sign(centerA - centerB);
+
+        return true;
+    }
+
+    void RigidCheck(const Components::Collider* A, const Components::Collider* B) {
+        auto* rMoving = A->gameObject->getComponent<Components::Rigidbody>();
+        if (!rMoving || rMoving->isKinematic) return; // only move if it has a rigidbody
+
+        glm::vec3 penetration;
+        if (!ComputeAABBDistance(A, B, penetration))
+            return;
+
+        glm::vec3 normal = glm::normalize(penetration);
+
+        // Compute velocity along normal
+        float vn = glm::dot(rMoving->velocity, normal);
+
+        // Only respond if moving into the other object
+        if (vn < 0) {
+            // Reflect velocity based on bounce
+            rMoving->velocity -= (1.0f + rMoving->bounce) * vn * normal;
+
+            // Apply friction along other axes
+            rMoving->velocity -= rMoving->velocity * rMoving->friction;
+        }
+    }
+
     void PhysicsSystem::PhysicsUpdate(float dTime) {
         //Get Object or Destroy
         for (int i = 0; i < physics_object.size(); ) {
@@ -63,6 +124,13 @@ namespace Engine {
             //Check Active
             if (!obj->active) { continue; }
             i++;
+        }
+
+        for (auto& p : physics_object) {
+            if (!p.rigid) continue;
+            if (!p.transform) continue;
+
+            p.rigid->update(dTime);
         }
 
         //Collider
@@ -82,6 +150,9 @@ namespace Engine {
                     testedPairs.insert(key);
 
                     if (A->intersects(*B)) {
+
+                        RigidCheck(A,B);
+
                         A->handleCollision(B);
                         B->handleCollision(A);
                     }
