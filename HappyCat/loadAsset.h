@@ -21,13 +21,31 @@ inline void LoadAsset() {
     // monster->getComponent<Components::MixamoBoy>()->camera = &camera;
     // monster->name = "monster";
 
-    Engine::Transform transform{
-        glm::vec3(0, 2, -5), // position
-        glm::vec3(0, 0, 0),  // rotation
-        glm::vec3(1, 1, 1)   // scale
+    Engine::Transform transform1{
+        glm::vec3(0.0f, 0.0f, 2.0f), // position
+        glm::vec3(0.0f),  // rotation
+        glm::vec3(10.0f)   // scale
+    };
+    Engine::Transform transform2{
+        glm::vec3(2.0f, 0.0f, 0.0f), // position
+        glm::vec3(0.0f),  // rotation
+        glm::vec3(10.0f)   // scale
+    };
+    Engine::Transform transform3{
+        glm::vec3(-2.0f, 0.0f, 0.0f), // position
+        glm::vec3(0.0f),  // rotation
+        glm::vec3(10.0f)   // scale
+    };
+    Engine::Transform transform4{
+        glm::vec3(0.0f, 0.0f, -2.0f), // position
+        glm::vec3(0.0f),  // rotation
+        glm::vec3(10.0f)   // scale
     };
 
-    Game::CreateObject<Prefab::Player>("CatBoi", transform);
+    Game::CreateObject<Prefab::Player>("CatBoi1", transform1);
+    Game::CreateObject<Prefab::Player>("CatBoi2", transform2);
+    Game::CreateObject<Prefab::Player>("CatBoi3", transform3);
+    Game::CreateObject<Prefab::Player>("CatBoi4", transform4);
 
     // Asset::Animation walkAnimation("Walking", "resources/models/happyCat/Catboi_Walk.fbx");
     // Asset::AssetStorage<Asset::Animation>::Load(walkAnimation);
