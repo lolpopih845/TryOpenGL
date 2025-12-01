@@ -74,16 +74,16 @@ inline void GameUpdate(GLFWwindow* window) {
     Engine::Scene::GetCurrentScene()->objects.UpdateAll(deltaTime);
     Engine::Scene::GetCurrentScene()->cameras.RenderAll();
 
-    // auto camID = Engine::Scene::GetCurrentScene()->cameras.GetCurrentCamera();
-    // auto camObj = Engine::Scene::GetCurrentScene()->objects.Get(camID);
-    // auto cam = camObj->getComponent<Components::Camera>();
-    // cam->ProcessMouseMovement(Engine::InputSystem::getMouseOffset().x, Engine::InputSystem::getMouseOffset().y);
-    //
-    // if(Engine::InputSystem::isKeyHold(Engine::KeyCode::W)) cam->ProcessKeyboard(0, deltaTime);
-    // if(Engine::InputSystem::isKeyHold(Engine::KeyCode::S)) cam->ProcessKeyboard(1, deltaTime);
-    // if(Engine::InputSystem::isKeyHold(Engine::KeyCode::A)) cam->ProcessKeyboard(2, deltaTime);
-    // if(Engine::InputSystem::isKeyHold(Engine::KeyCode::D)) cam->ProcessKeyboard(3, deltaTime);
-    //
+    auto camID = Engine::Scene::GetCurrentScene()->cameras.GetCurrentCamera();
+    auto camObj = Engine::Scene::GetCurrentScene()->objects.Get(camID);
+    auto cam = camObj->getComponent<Components::Camera>();
+    cam->ProcessMouseMovement(Engine::InputSystem::getMouseOffset().x, Engine::InputSystem::getMouseOffset().y);
+
+    if(Engine::InputSystem::isKeyHold(Engine::KeyCode::W)) cam->ProcessKeyboard(0, deltaTime);
+    if(Engine::InputSystem::isKeyHold(Engine::KeyCode::S)) cam->ProcessKeyboard(1, deltaTime);
+    if(Engine::InputSystem::isKeyHold(Engine::KeyCode::A)) cam->ProcessKeyboard(2, deltaTime);
+    if(Engine::InputSystem::isKeyHold(Engine::KeyCode::D)) cam->ProcessKeyboard(3, deltaTime);
+
     // std::cout << "Camera Position: "
     //       << "X: " << cam->Position.x << ", "
     //       << "Y: " << cam->Position.y << ", "

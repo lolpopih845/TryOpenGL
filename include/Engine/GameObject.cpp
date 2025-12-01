@@ -18,9 +18,6 @@ namespace Engine {
         for (auto& c : components) {
             if (c->isEnabled()) {
                 c->update(dTime);
-                if (const auto r = dynamic_cast<Components::Renderer*>(c.get())) {
-                    r->render();
-                }
             }
         }
     }

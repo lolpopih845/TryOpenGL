@@ -80,39 +80,39 @@ namespace Components {
         //Render Object --> ObjectManager
     }
 
-    // void Camera::ProcessMouseMovement(float xOffset, float yOffset, const float sensitivity) {
-    //     xOffset *= sensitivity;
-    //     yOffset *= sensitivity;
-    //
-    //     Yaw   += xOffset;
-    //     Pitch += yOffset;
-    //
-    //     if(Pitch > 89.0f) Pitch = 89.0f;
-    //     if(Pitch < -89.0f) Pitch = -89.0f;
-    //
-    //     glm::vec3 front;
-    //     front.x = cos(glm::radians(Yaw)) * cos(glm::radians(Pitch));
-    //     front.y = sin(glm::radians(Pitch));
-    //     front.z = sin(glm::radians(Yaw)) * cos(glm::radians(Pitch));
-    //     Front = glm::normalize(front);
-    //     Right = glm::normalize(glm::cross(Front, WorldUp));
-    //     Up    = glm::normalize(glm::cross(Right, Front));
-    // }
-    //
-    // void Camera::ProcessKeyboard(const int direction, const float deltaTime, const float speed) const {
-    //     float velocity = speed * deltaTime;
-    //     glm::vec3 movement(0.0f);
-    //     if(direction == 0) movement += Front * velocity;
-    //     if(direction == 1) movement -= Front * velocity;
-    //     if(direction == 2) movement -= Right * velocity;
-    //     if(direction == 3) movement += Right * velocity;
-    //
-    //     if(transform) {
-    //         Engine::Transform t = transform->getTransform();
-    //         t.translation += movement;
-    //         transform->setTransform(t);
-    //     }
-    // }
+    void Camera::ProcessMouseMovement(float xOffset, float yOffset, const float sensitivity) {
+        xOffset *= sensitivity;
+        yOffset *= sensitivity;
+
+        Yaw   += xOffset;
+        Pitch += yOffset;
+
+        if(Pitch > 89.0f) Pitch = 89.0f;
+        if(Pitch < -89.0f) Pitch = -89.0f;
+
+        glm::vec3 front;
+        front.x = cos(glm::radians(Yaw)) * cos(glm::radians(Pitch));
+        front.y = sin(glm::radians(Pitch));
+        front.z = sin(glm::radians(Yaw)) * cos(glm::radians(Pitch));
+        Front = glm::normalize(front);
+        Right = glm::normalize(glm::cross(Front, WorldUp));
+        Up    = glm::normalize(glm::cross(Right, Front));
+    }
+
+    void Camera::ProcessKeyboard(const int direction, const float deltaTime, const float speed) const {
+        float velocity = speed * deltaTime;
+        glm::vec3 movement(0.0f);
+        if(direction == 0) movement += Front * velocity;
+        if(direction == 1) movement -= Front * velocity;
+        if(direction == 2) movement -= Right * velocity;
+        if(direction == 3) movement += Right * velocity;
+
+        if(transform) {
+            Engine::Transform t = transform->getTransform();
+            t.translation += movement;
+            transform->setTransform(t);
+        }
+    }
 
     void Camera::update(float dtime) {
         //Nothing

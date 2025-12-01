@@ -37,7 +37,7 @@ public:
         auto& map = assets();
         const auto it = map.find(id);
         if (it == map.end()) {
-            std::cerr << "No such asset" << std::endl;
+            std::cout << "No such asset: " << id << std::endl;
             return nullptr;
         }
         return static_cast<T*>(it->second.get());
