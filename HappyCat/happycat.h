@@ -55,7 +55,7 @@ void main() {
 #version 330 core
 out vec4 FragColor;
 void main() {
-    FragColor = vec4(0.8, 0.2, 0.2, 1.0); // red
+    FragColor = vec4(1.0f, 0.4f, 0.7f, 1.0f);
 }
 )";
     unsigned int vertex = CompileShader(GL_VERTEX_SHADER, vertexShaderSource);
@@ -116,36 +116,81 @@ inline void GameInit() {
     LoadAsset();
 
     float vertices[] = {
-        // positions
-        -0.5f, -0.5f, -0.5f, // 0
-         0.5f, -0.5f, -0.5f, // 1
-         0.5f,  0.5f, -0.5f, // 2
-        -0.5f,  0.5f, -0.5f, // 3
-        -0.5f, -0.5f,  0.5f, // 4
-         0.5f, -0.5f,  0.5f, // 5
-         0.5f,  0.5f,  0.5f, // 6
-        -0.5f,  0.5f,  0.5f  // 7
+        // ---- FRONT FACE (z = +0.05) ----
+        -0.8f, -0.3f,  0.05f,  // 0
+        -0.3f, -0.3f,  0.05f,  // 1
+        -0.55f, 0.3f,  0.05f,  // 2
+        0.3f, -0.3f,   0.05f,  // 3
+        0.8f, -0.3f,   0.05f,  // 4
+        0.55f, 0.3f,   0.05f,  // 5
+        -0.9f, -0.5f,  0.05f,  // 6
+        0.9f, -0.5f,   0.05f,  // 7
+        0.9f, -0.1f,   0.05f,  // 8
+        -0.9f, -0.1f,  0.05f,  // 9
+
+        // ---- BACK FACE (z = -0.05) ----
+        -0.8f, -0.3f, -0.05f,  // 10
+        -0.3f, -0.3f, -0.05f,  // 11
+        -0.55f, 0.3f, -0.05f,  // 12
+        0.3f, -0.3f, -0.05f,   // 13
+        0.8f, -0.3f, -0.05f,   // 14
+        0.55f, 0.3f, -0.05f,   // 15
+        -0.9f, -0.5f, -0.05f,  // 16
+        0.9f, -0.5f, -0.05f,   // 17
+        0.9f, -0.1f, -0.05f,   // 18
+        -0.9f, -0.1f, -0.05f   // 19
     };
 
     unsigned int indices[] = {
-        // back face
-        0, 1, 2,
-        2, 3, 0,
-        // front face
-        4, 5, 6,
-        6, 7, 4,
-        // left face
-        4, 0, 3,
-        3, 7, 4,
-        // right face
-        1, 5, 6,
-        6, 2, 1,
-        // bottom face
-        4, 5, 1,
-        1, 0, 4,
-        // top face
-        3, 2, 6,
-        6, 7, 3
+        // ---------- FRONT FACE ----------
+        0,1,2,        // left ear
+        3,4,5,        // right ear
+        6,7,8,        // bottom tri 1
+        6,8,9,        // bottom tri 2
+
+        // ---------- BACK FACE (reverse winding) ----------
+        10,12,11,
+        13,15,14,
+        16,18,17,
+        16,19,18,
+
+        // ---------- SIDES (connect front/back) ----------
+        // Side between 0 and 1
+        0,10,11,
+        0,11,1,
+
+        // Side between 1 and 2
+        1,11,12,
+        1,12,2,
+
+        // Side between 2 and 0
+        2,12,10,
+        2,10,0,
+
+        // Side between 3 and 4
+        3,13,14,
+        3,14,4,
+
+        // Side between 4 and 5
+        4,14,15,
+        4,15,5,
+
+        // Side between 5 and 3
+        5,15,13,
+        5,13,3,
+
+        // Side around bottom quad (6–9)
+        6,16,17,
+        6,17,7,
+
+        7,17,18,
+        7,18,8,
+
+        8,18,19,
+        8,19,9,
+
+        9,19,16,
+        9,16,6
     };
 
     unsigned int VAO, VBO, EBO;
@@ -169,9 +214,9 @@ inline void GameInit() {
 
     glBindVertexArray(0);
 
-    cube.position = glm::vec3(0.0f, 0.1f, -0.25f); // ตัวอย่างตำแหน่งในโลก
-    cube.rotation = glm::vec3(0.0f); // หมุน 30° X, 45° Y
-    cube.scale    = glm::vec3(0.1f); // ขนาดเดิม
+    cube.position = glm::vec3(0.0f, 0.07f, -0.25f);
+    cube.rotation = glm::vec3(180.0f, 0.0f, 0.0f);
+    cube.scale    = glm::vec3(0.1f);
 
     shaderProgram = CreateShaderProgram();
 
@@ -198,7 +243,7 @@ inline void GameInit() {
         glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, &projection[0][0]);
 
         glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, 84, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
 
         glfwSwapBuffers(window);
